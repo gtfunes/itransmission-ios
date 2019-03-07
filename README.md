@@ -9,7 +9,7 @@ Everything works, torrent files, magnet links and exporting files to other appli
 
 The only bug I noticed is that sometimes when deleting a torrent the app crashes.
 
-Original about page:
+# Original about page:
 
 What is it?
 iTransmission is a native BitTorrent client for iOS. It's free and open source. It uses the same backend as Transmission on Mac OS X does.
