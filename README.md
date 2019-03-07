@@ -1,5 +1,5 @@
 # iTransmission-iOS
-iTransmission for iOS 11+
+iTransmission for iOS 8+
 
 This port of iTransmission for iOS was initially created by [ccp0101](https://github.com/ccp0101) and hosted at https://code.google.com/archive/p/itransmission/
 
