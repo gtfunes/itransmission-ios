@@ -14,22 +14,36 @@ The only bug I noticed is that sometimes when deleting a torrent the app crashes
 What is it?
 iTransmission is a native BitTorrent client for iOS. It's free and open source. It uses the same backend as Transmission on Mac OS X does.
 
-Homepage
+Homepage:
+
+
 http://code.google.com/p/itransmission
 
-Versions
+
+Versions:
+
+
 iTransmission 37
+
 libtransmission 2.82 (14160)
+
 libevent 2.0.21-stable
 
-Credits
+Credits:
+
 @andywiik for iPad support, safari magnet links, and new build script.
+
 
 All the libtransmission developers for their great backend.
 
+
 @ccp0101 for the original project.
+
 
 @alobi for ALAlertBanner.
 
-License
+
+License:
+
+
 iTransmission is released under GPLv3.
