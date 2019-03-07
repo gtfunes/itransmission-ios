@@ -1,0 +1,426 @@
+/*
+ * ./Source/Controllers/TrackersViewController.m
+ */
+
+"The URL you entered is invalid. Just where did you get it?" = "The URL you entered is invalid. Just where did you get it?";
+
+"A tracker with the same URL already exists, so both of them are the same trackers." = "A tracker with the same URL already exists, so both of them are the same trackers.";
+
+"Add Tracker" = "Add Tracker";
+
+"Enter the full tracker URL" = "Enter the full tracker URL";
+
+"Enter tracker URL" = "Enter tracker URL";
+
+
+
+
+
+
+
+/*
+ * ./Source/Controllers/BandwidthController.m
+ */
+
+"Global Bandwidth" = "Global Bandwidth";
+
+"Bandwidth" = "Bandwidth";
+
+"Connections" = "Connections";
+
+"Speed Limits" = "Speed Limits";
+
+"Upload" = "Upload";
+
+"Download" = "Download";
+
+"Caution! Too many connections will make your device unstable." = "Caution! Too many connections will make your device unstable.";
+
+"30KB/s is recommended for upload." = "30KB/s is recommended for upload.";
+
+
+
+
+
+
+
+/*
+ * ./Source/Helpers+Additions/UncaughtExceptionHandler.m
+ */
+
+"Unhandled exception" = "Unhandled exception";
+
+"You can try to continue but the application may be unstable.\n\nDebug details follow:\n%@\n%@" = "You can try to continue but the application may be unstable.\n\nDebug details follow:\n%@\n%@";
+
+"Quit" = "Quit";
+
+"Continue" = "Continue";
+
+"The app has crashed: %@" = "The app has crashed: %@";
+
+"Reopen" = "Reopen";
+
+"Signal %d was raised." = "Signal %d was raised.";
+
+
+
+
+
+
+
+/*
+ * ./Source/Controllers/Controller.m
+ */
+
+"Warning" = "Warning";
+
+"Be careful, debugging in Xcode changes the app's documents path which will corrupt your downloading torrents, continue anyway?" = "Be careful, debugging in Xcode changes the app's documents path which will corrupt your downloading torrents, continue anyway?";
+
+"YES" = "YES";
+
+"NO" = "NO";
+
+"Switched to WiFi. Pausing..." = "Switched to WiFi. Pausing...";
+
+"Switched to WiFi. Resuming..." = "Switched to WiFi. Resuming...";
+
+"Network is down!" = "Network is down!";
+
+"Switched to cellular network. Pausing..." = "Switched to cellular network. Pausing...";
+
+"Switched to cellular network. Resuming..." = "Switched to cellular network. Resuming...";
+
+"Adding from %@ failed. %@" = "Adding from %@ failed. %@";
+
+"Dismiss" = "Dismiss";
+
+"Add torrent" = "Add torrent";
+
+"Torrent %@ already exists." = "Torrent %@ already exists.";
+
+"The magnet supplied is invalid." = "The magnet supplied is invalid.";
+
+"Torrent %s already exists." = "Torrent %s already exists.";
+
+"Invalid torrent file." = "Invalid torrent file.";
+
+"Unknown error." = "Unknown error.";
+
+"%@ download finished." = "%@ download finished.";
+
+"View" = "View";
+
+
+
+
+
+
+
+/*
+ * ./Source/Controllers/DetailViewController.m
+ */
+
+"Details" = "Details";
+
+"Downloading" = "Downloading";
+
+"Paused" = "Paused";
+
+"Start" = "Start";
+
+"Pause" = "Pause";
+
+"Copied!" = "Copied!";
+
+"Tap to Copy" = "Tap to Copy";
+
+"Files" = "Files";
+
+"Recheck Data" = "Recheck Data";
+
+"Are you sure to remove this torrent?" = "Are you sure to remove this torrent?";
+
+"Transfer" = "Transfer";
+
+"Actions" = "Actions";
+
+"Speed" = "Speed";
+
+"General Information" = "General Information";
+
+"Location" = "Location";
+
+"More" = "More";
+
+
+
+
+
+
+
+/*
+ * ./Source/Nodes/TrackerNode.m
+ */
+
+"Announce timed out" = "Announce timed out";
+
+"Announce error" = "Announce error";
+
+"Last Announce" = "Last Announce";
+
+"got 1 peer" = "got 1 peer";
+
+"got %d peers" = "got %d peers";
+
+"Next announce in %@" = "Next announce in %@";
+
+"Announce is queued" = "Announce is queued";
+
+"Tracker will be used as a backup" = "Tracker will be used as a backup";
+
+"Announce not scheduled" = "Announce not scheduled";
+
+"Scrape timed out" = "Scrape timed out";
+
+"Scrape error" = "Scrape error";
+
+"Last Scrape" = "Last Scrape";
+
+
+
+
+
+
+
+/*
+ * ./Source/Controllers/TorrentViewController.m
+ */
+
+"Transfers" = "Transfers";
+
+"Are you sure to remove %@ torrent?" = "Are you sure to remove %@ torrent?";
+
+"Add from..." = "Add from...";
+
+"Web" = "Web";
+
+"Magnet" = "Magnet";
+
+"URL" = "URL";
+
+"Are you sure to remove one torrent?" = "Are you sure to remove one torrent?";
+
+"Are you sure to remove %lu torrents?" = "Are you sure to remove %lu torrents?";
+
+"Please enter the existing torrent's URL" = "Please enter the existing torrent's URL";
+
+"OK" = "OK";
+
+"Add from magnet" = "Add from magnet";
+
+"Error: The URL provided is malformed!" = "Error: The URL provided is malformed!";
+
+"Please enter the magnet link below." = "Please enter the magnet link below.";
+
+
+
+
+
+
+
+/*
+ * ./Source/Reachability/Reachability.m
+ */
+
+"Cellular" = "Cellular";
+
+"WiFi" = "WiFi";
+
+"No Connection" = "No Connection";
+
+
+
+
+
+
+
+/*
+ * ./Source/Helpers+Additions/NSString+Additions.m
+ */
+
+"%@ of %@" = "%@ of %@";
+
+"1 year" = "1 year";
+
+"%u years" = "%u years";
+
+"1 day" = "1 day";
+
+"%u days" = "%u days";
+
+"%u hr" = "%u hr";
+
+"%u min" = "%u min";
+
+"%u sec" = "%u sec";
+
+"KB" = "KB";
+
+"MB" = "MB";
+
+"GB" = "GB";
+
+"TB" = "TB";
+
+
+
+
+
+
+
+/*
+ * ./Source/Controllers/PrefViewController.m
+ */
+
+"Preferences" = "Preferences";
+
+"Web Interface" = "Web Interface";
+
+"Network Interface" = "Network Interface";
+
+"Port Listening" = "Port Listening";
+
+"Logging" = "Logging";
+
+"Background Downloading" = "Background Downloading";
+
+"It's always recommended to use authentication if web interface is enabled. \n\nYour IP address is: %@ \n\nRemember the file server's port number is always one port above the web interface." = "It's always recommended to use authentication if web interface is enabled. \n\nYour IP address is: %@ \n\nRemember the file server's port number is always one port above the web interface.";
+
+"Enabling cellular network may generate significant data charges." = "Enabling cellular network may generate significant data charges.";
+
+"Only use logging for debugging. Extensive loggings will shorten both battery and Nand life. Saved logs will be available in iTunes." = "Only use logging for debugging. Extensive loggings will shorten both battery and Nand life. Saved logs will be available in iTunes.";
+
+"Enable downloading while in background." = "Enable downloading while in background.";
+
+"Failure" = "Failure";
+
+"Please save before performing a port check." = "Please save before performing a port check.";
+
+"Congratulations. Your port %li is open!" = "Congratulations. Your port %li is open!";
+
+"Failed to perform port check." = "Failed to perform port check.";
+
+"Oh bad. Your port %li is not accessable from outside." = "Oh bad. Your port %li is not accessable from outside.";
+
+"Port check" = "Port check";
+
+"Disable WiFi" = "Disable WiFi";
+
+"Disabling WiFi is strongly discouraged! Please make sure this is what you want." = "Disabling WiFi is strongly discouraged! Please make sure this is what you want.";
+
+"Cannot check port" = "Cannot check port";
+
+"Bind port may have been modified. Please save before port test." = "Bind port may have been modified. Please save before port test.";
+
+
+
+
+
+
+
+/*
+ * ./Source/Miscallaneous/Torrent.m
+ */
+
+"unreadable error" = "unreadable error";
+
+"%@ of torrent metadata retrieved" = "%@ of torrent metadata retrieved";
+
+"torrent metadata needed" = "torrent metadata needed";
+
+"Magnetized transfer" = "Magnetized transfer";
+
+"%@ selected" = "%@ selected";
+
+"uploaded %@ (Ratio: %@)" = "uploaded %@ (Ratio: %@)";
+
+"Tracker returned error" = "Tracker returned error";
+
+"Tracker returned warning" = "Tracker returned warning";
+
+"Waiting to download" = "Waiting to download";
+
+"Waiting to seed" = "Waiting to seed";
+
+"Seeding complete" = "Seeding complete";
+
+"Waiting to check existing data" = "Waiting to check existing data";
+
+"Checking existing data" = "Checking existing data";
+
+"Downloading from %d of %d peers" = "Downloading from %d of %d peers";
+
+"Downloading from %d of 1 peer" = "Downloading from %d of 1 peer";
+
+"web seed" = "web seed";
+
+"%d web seeds" = "%d web seeds";
+
+"Seeding to %d of %d peers" = "Seeding to %d of %d peers";
+
+"Seeding to %d of 1 peer" = "Seeding to %d of 1 peer";
+
+"Stalled" = "Stalled";
+
+"DL" = "DL";
+
+"UL" = "UL";
+
+"Ratio" = "Ratio";
+
+"Seeding" = "Seeding";
+
+"remaining time unknown" = "remaining time unknown";
+
+"%@ remaining" = "%@ remaining";
+
+"inactive" = "inactive";
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+ * SHARED STRINGS
+ */
+
+"Add from URL" = "Add from URL";
+
+"Trackers" = "Trackers";
+
+"Cancel" = "Cancel";
+
+"Yes and remove data" = "Yes and remove data";
+
+"Yes but keep data" = "Yes but keep data";
+
+"Dismiss" = "Dismiss";
+
+"Error" = "Error";
+
+"OK" = "OK";
+
+"N/A" = "N/A";
+
+"Paused" = "Paused";
+
+"Downloading" = "Downloading";
+
