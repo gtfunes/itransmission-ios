@@ -134,8 +134,3 @@ fastlane/test_output
 # PRIVATE ones are stored inside xcuserdata
 
 !xcschemes
-
-####
-# Don't include our project's documentation
-
-/documentation/
