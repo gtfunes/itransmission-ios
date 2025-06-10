@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -733,7 +733,8 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1010;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1630;
 				TargetAttributes = {
 					8981243218884D2900DB955B = {
 						ProvisioningStyle = Manual;
@@ -750,13 +751,9 @@
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "iTransmission" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 1;
 			knownRegions = (
-				English,
-				Japanese,
-				French,
-				German,
 				da,
 				en,
 				"es-ES",
@@ -766,6 +763,7 @@
 				"zh-Hans",
 				"zh-Hant",
 				Base,
+				de,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
@@ -954,6 +952,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -962,6 +961,7 @@
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Gaston Funes (P6ZXHU5K43)";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_ENABLE_SSE3_EXTENSIONS = NO;
 				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
@@ -977,7 +977,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Libraries/include/${CURRENT_ARCH}\"/**";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/Libraries/lib\"/**";
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
@@ -1020,7 +1020,8 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "\"Libraries/include/${CURRENT_ARCH}\"/**";
 				INFOPLIST_FILE = "Other Sources/iTransmission-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				INFOPLIST_KEY_CFBundleDisplayName = iTransmission;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_DEPENDENCY_INFO_FILE = "";
 				LIBRARY_SEARCH_PATHS = "Libraries/lib/**";
 				ONLY_ACTIVE_ARCH = NO;
@@ -1077,7 +1078,8 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "\"Libraries/include/${CURRENT_ARCH}\"/**";
 				INFOPLIST_FILE = "Other Sources/iTransmission-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				INFOPLIST_KEY_CFBundleDisplayName = iTransmission;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_DEPENDENCY_INFO_FILE = "";
 				LIBRARY_SEARCH_PATHS = "Libraries/lib/**";
 				ONLY_ACTIVE_ARCH = NO;
@@ -1135,7 +1137,8 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "\"Libraries/include/${CURRENT_ARCH}\"/**";
 				INFOPLIST_FILE = "Other Sources/iTransmission-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				INFOPLIST_KEY_CFBundleDisplayName = iTransmission;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_DEPENDENCY_INFO_FILE = "";
 				LIBRARY_SEARCH_PATHS = "Libraries/lib/**";
 				ONLY_ACTIVE_ARCH = NO;
@@ -1183,6 +1186,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1193,6 +1197,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_ENABLE_SSE3_EXTENSIONS = NO;
 				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
@@ -1209,7 +1214,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Libraries/include/${CURRENT_ARCH}\"/**";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/Libraries/lib\"/**";
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
@@ -1240,6 +1245,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1248,6 +1254,7 @@
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Gaston Funes (4LM6Y2275K)";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_ENABLE_SSE3_EXTENSIONS = NO;
 				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
@@ -1263,7 +1270,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Libraries/include/${CURRENT_ARCH}\"/**";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/Libraries/lib\"/**";
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";

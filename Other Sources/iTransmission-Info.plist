@@ -86,7 +86,7 @@
 	<key>UIPrerenderedIcon</key>
 	<true/>
 	<key>UIRequiresFullScreen</key>
-	<true/>
+	<false/>
 	<key>UIRequiresPersistentWiFi</key>
 	<true/>
 	<key>UISupportedInterfaceOrientations</key>
