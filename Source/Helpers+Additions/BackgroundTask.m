@@ -72,9 +72,23 @@ void interruptionListenerCallback (void *inUserData, UInt32 interruptionState);
         [self initBackgroudTask];
     }
 
-    if ([self.target respondsToSelector:@selector(selector)])
+    // Previously this used @selector(selector) — a literal selector named
+    // "selector" — which would never match any real method and silently did
+    // nothing. Use self.selector (the stored SEL ivar) instead.
+    if (self.target && [self.target respondsToSelector:self.selector])
     {
-        [self.target performSelector:@selector(selector) withObject:notification];
+        [self.target performSelector:self.selector withObject:notification];
+    }
+}
+
+- (void) timerFired:(NSTimer *)timer
+{
+    // BackgroundTask is the NSTimer target (not the external target) to avoid
+    // the run loop holding a strong reference to the caller (e.g. Controller).
+    // Forward the tick to the external target/selector stored in ivars.
+    if (self.target && [self.target respondsToSelector:self.selector])
+    {
+        [self.target performSelector:self.selector withObject:nil];
     }
 }
 
@@ -115,9 +129,19 @@ void interruptionListenerCallback (void *inUserData, UInt32 interruptionState);
         [weakSelf.player prepareToPlay];
         [weakSelf.player play];
 
-        if ([weakSelf.target respondsToSelector:@selector(selector)])
+        // Use BackgroundTask (weakSelf) as the timer target, NOT weakSelf.target.
+        // NSTimer retains its target strongly via the run loop. Passing the
+        // external target (e.g. Controller) directly would pin it in memory for
+        // as long as the background task runs, and crash if the target is ever
+        // released before the timer is invalidated. Instead, BackgroundTask acts
+        // as a trampoline: it forwards ticks to the external target in timerFired:.
+        if (weakSelf.target && [weakSelf.target respondsToSelector:weakSelf.selector])
         {
-            weakSelf.timer = [NSTimer scheduledTimerWithTimeInterval:weakSelf.timerInterval target:weakSelf.target selector:weakSelf.selector userInfo:nil repeats:YES];
+            weakSelf.timer = [NSTimer scheduledTimerWithTimeInterval:weakSelf.timerInterval
+                                                             target:weakSelf
+                                                           selector:@selector(timerFired:)
+                                                           userInfo:nil
+                                                            repeats:YES];
         }
     });
 }
