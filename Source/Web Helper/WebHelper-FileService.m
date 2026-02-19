@@ -44,7 +44,7 @@
 	// Read in the files
     NSString *wd = [([self.cwd length] && ![self.cwd isEqualToString:@"/"] ? self.cwd : [self searchDirectoryPath]) stringByExpandingTildeInPath];
 
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtURL:[NSURL URLWithString:[wd stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]
+    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtURL:[NSURL URLWithString:[wd stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]]]
                                           includingPropertiesForKeys:@[NSURLNameKey, NSURLIsDirectoryKey]
                                                              options:NSDirectoryEnumerationSkipsHiddenFiles
                                                         errorHandler:^BOOL(NSURL *url, NSError *error) {
@@ -82,7 +82,7 @@
             detailData = [NSString stringWithFormat:@"<audio width=\"200\" height\"200\" controls><source src=\"%@\" type=\"%@\"></audio>", cpath, mime];
         }
 
-        [outdata appendFormat:@"<li>%@<a href=\"%@%@\">%@%@</a></li>\n", detailData, [[cpath stringByReplacingOccurrencesOfString:[self searchDirectoryPath] withString:@""] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] , pathSeparator, fileName, pathSeparator];
+        [outdata appendFormat:@"<li>%@<a href=\"%@%@\">%@%@</a></li>\n", detailData, [[cpath stringByReplacingOccurrencesOfString:[self searchDirectoryPath] withString:@""] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]], pathSeparator, fileName, pathSeparator];
     }
     
     //[outdata appendString:@"<li><a href=\"delete/\" onclick=\"javascript:return confirm('¿Are you sure?');\">Delete Files</a></li>\n"];
