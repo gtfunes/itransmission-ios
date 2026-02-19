@@ -21,7 +21,6 @@
 		263C02001ACA392F000E241B /* bannerNotify@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 263C01F81ACA392F000E241B /* bannerNotify@2x.png */; };
 		263C02011ACA392F000E241B /* bannerSuccess.png in Resources */ = {isa = PBXBuildFile; fileRef = 263C01F91ACA392F000E241B /* bannerSuccess.png */; };
 		263C02021ACA392F000E241B /* bannerSuccess@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 263C01FA1ACA392F000E241B /* bannerSuccess@2x.png */; };
-		2655C7621ACB498B000F77A3 /* UIAlertView+CompletionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 2655C7611ACB498B000F77A3 /* UIAlertView+CompletionHandler.m */; };
 		269733F31AC86F31000BD247 /* bandwidth-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 269733D91AC86F31000BD247 /* bandwidth-icon.png */; };
 		269733F41AC86F31000BD247 /* bandwidth-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 269733DA1AC86F31000BD247 /* bandwidth-icon@2x.png */; };
 		269733F51AC86F31000BD247 /* blackArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 269733DB1AC86F31000BD247 /* blackArrow.png */; };
@@ -142,8 +141,6 @@
 		263C01F81ACA392F000E241B /* bannerNotify@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bannerNotify@2x.png"; sourceTree = "<group>"; };
 		263C01F91ACA392F000E241B /* bannerSuccess.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bannerSuccess.png; sourceTree = "<group>"; };
 		263C01FA1ACA392F000E241B /* bannerSuccess@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bannerSuccess@2x.png"; sourceTree = "<group>"; };
-		2655C7601ACB498B000F77A3 /* UIAlertView+CompletionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIAlertView+CompletionHandler.h"; sourceTree = "<group>"; };
-		2655C7611ACB498B000F77A3 /* UIAlertView+CompletionHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertView+CompletionHandler.m"; sourceTree = "<group>"; };
 		2655C7631ACB4D2E000F77A3 /* AmIBeingDebugged.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AmIBeingDebugged.h; sourceTree = "<group>"; };
 		269733D91AC86F31000BD247 /* bandwidth-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bandwidth-icon.png"; sourceTree = "<group>"; };
 		269733DA1AC86F31000BD247 /* bandwidth-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bandwidth-icon@2x.png"; sourceTree = "<group>"; };
@@ -400,8 +397,6 @@
 				26354BE71ACB6695008F32A4 /* UncaughtExceptionHandler.m */,
 				2697EEA31ACDA0D400E3ACB7 /* BackgroundTask.h */,
 				2697EEA41ACDA0D400E3ACB7 /* BackgroundTask.m */,
-				2655C7601ACB498B000F77A3 /* UIAlertView+CompletionHandler.h */,
-				2655C7611ACB498B000F77A3 /* UIAlertView+CompletionHandler.m */,
 				26EBDF261AC9D0FF0031A167 /* NSDate+Helper.h */,
 				26EBDF271AC9D0FF0031A167 /* NSDate+Helper.m */,
 				26EBDF281AC9D0FF0031A167 /* NSDictionary+Additions.h */,
@@ -891,7 +886,6 @@
 				895A73B618D9CB6F00561CD6 /* ControlButton.m in Sources */,
 				895A739718D9CB6F00561CD6 /* BandwidthController.m in Sources */,
 				895A73B518D9CB6F00561CD6 /* ClipboardLabel.m in Sources */,
-				2655C7621ACB498B000F77A3 /* UIAlertView+CompletionHandler.m in Sources */,
 				26354BE81ACB6695008F32A4 /* UncaughtExceptionHandler.m in Sources */,
 				895A73C218D9CB6F00561CD6 /* SVWebViewControllerActivitySafari.m in Sources */,
 			);
