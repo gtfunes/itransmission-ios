@@ -28,11 +28,14 @@
 }
 
 - (void)performActivity {
-    NSString *openingURL = [self.URLToOpen.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *openingURL = [self.URLToOpen.absoluteString
+        stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     NSURL *activityURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", self.schemePrefix, openingURL]];
-	[[UIApplication sharedApplication] openURL:activityURL];
-    
-	[self activityDidFinish:YES];
+    [[UIApplication sharedApplication] openURL:activityURL
+                                       options:@{}
+                             completionHandler:^(BOOL success) {
+        [self activityDidFinish:success];
+    }];
 }
 
 @end

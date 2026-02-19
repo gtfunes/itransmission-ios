@@ -25,8 +25,11 @@
 }
 
 - (void)performActivity {
-	BOOL completed = [[UIApplication sharedApplication] openURL:self.URLToOpen];
-	[self activityDidFinish:completed];
+    [[UIApplication sharedApplication] openURL:self.URLToOpen
+                                       options:@{}
+                             completionHandler:^(BOOL success) {
+        [self activityDidFinish:success];
+    }];
 }
 
 @end
