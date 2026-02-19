@@ -640,7 +640,12 @@ static tr_rpc_callback_status rpcCallback(tr_session *handle, tr_rpc_callback_ty
         [set addIndex:[fTorrents indexOfObjectIdenticalTo:torrent]];
 	}
 
-    [set enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+    // Enumerate in REVERSE order so that removing a lower index does not shift
+    // the positions of higher indices that are still pending removal.
+    // Ascending enumeration (the default) would cause later indices to reference
+    // the wrong elements — or crash with an out-of-bounds access — after each
+    // earlier removal shifts every subsequent element down by one.
+    [set enumerateIndexesWithOptions:NSEnumerationReverse usingBlock:^(NSUInteger idx, BOOL *stop) {
         [self->fTorrents removeObjectAtIndex:idx];
     }];
 
