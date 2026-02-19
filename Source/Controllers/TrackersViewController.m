@@ -83,11 +83,15 @@
     [dialog addAction:[UIAlertAction actionWithTitle:LocalizedString(@"OK")
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction *action) {
+        // Promote weak refs to strong so ivar access is safe for the duration of this block
+        __strong __typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+
         NSString *url = weakDialog.textFields.firstObject.text;
 
         // Check for duplicate tracker using proper string comparison
         BOOL exists = NO;
-        for (TrackerNode *node in weakSelf->Trackers) {
+        for (TrackerNode *node in strongSelf->Trackers) {
             if ([[node fullAnnounceAddress] isEqualToString:url]) {
                 exists = YES;
                 break;
@@ -107,14 +111,14 @@
             [errorAlert addAction:[UIAlertAction actionWithTitle:LocalizedString(@"Dismiss")
                                                            style:UIAlertActionStyleCancel
                                                          handler:nil]];
-            [weakSelf presentViewController:errorAlert animated:YES completion:nil];
+            [strongSelf presentViewController:errorAlert animated:YES completion:nil];
         } else {
-            [weakSelf->fTorrent addTrackerToNewTier:url];
+            [strongSelf->fTorrent addTrackerToNewTier:url];
 
-            [weakSelf reloadTrackers];
-            [weakSelf.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]]
+            [strongSelf reloadTrackers];
+            [strongSelf.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]]
                                       withRowAnimation:UITableViewRowAnimationLeft];
-            [weakSelf.tableView reloadData];
+            [strongSelf.tableView reloadData];
         }
     }]];
 

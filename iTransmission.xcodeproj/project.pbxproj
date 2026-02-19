@@ -116,6 +116,8 @@
 		895A750218D9CB8A00561CD6 /* TrackersViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 895A74F218D9CB8A00561CD6 /* TrackersViewController.xib */; };
 		895A750718D9CF9B00561CD6 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 895A750618D9CF9B00561CD6 /* Images.xcassets */; };
 		897DEFE418DEF01100E12909 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89F9EE8818381630001A2A4D /* AVFoundation.framework */; };
+		4BE9DA2E20184CC389064A34 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 984D3BD978F94D7AA4FBDEAF /* WebKit.framework */; };
+		86B8A7492A8F42C8A656D3AC /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A09EFC9F03647E5AC2EE59D /* UserNotifications.framework */; };
 		898124A318884D2900DB955B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		898124A418884D2900DB955B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		898124A518884D2900DB955B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -301,6 +303,8 @@
 		898124BA18884D2900DB955B /* iTransmission.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iTransmission.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		89F9EE8618381627001A2A4D /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		89F9EE8818381630001A2A4D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		984D3BD978F94D7AA4FBDEAF /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		3A09EFC9F03647E5AC2EE59D /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		ACE6CA48189DBE2200444349 /* libSystem.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSystem.dylib; path = usr/lib/libSystem.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -310,6 +314,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				897DEFE418DEF01100E12909 /* AVFoundation.framework in Frameworks */,
+				4BE9DA2E20184CC389064A34 /* WebKit.framework in Frameworks */,
+				86B8A7492A8F42C8A656D3AC /* UserNotifications.framework in Frameworks */,
 				898124A318884D2900DB955B /* CoreGraphics.framework in Frameworks */,
 				898124A418884D2900DB955B /* Foundation.framework in Frameworks */,
 				898124A518884D2900DB955B /* UIKit.framework in Frameworks */,
@@ -442,6 +448,8 @@
 				ACE6CA48189DBE2200444349 /* libSystem.dylib */,
 				7EDBAD5613CA984B0047AB4B /* libicucore.dylib */,
 				89F9EE8818381630001A2A4D /* AVFoundation.framework */,
+				984D3BD978F94D7AA4FBDEAF /* WebKit.framework */,
+				3A09EFC9F03647E5AC2EE59D /* UserNotifications.framework */,
 				89F9EE8618381627001A2A4D /* IOKit.framework */,
 				7437B171125B4B6500B456EF /* SystemConfiguration.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
