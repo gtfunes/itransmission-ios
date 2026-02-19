@@ -220,7 +220,13 @@
 - (void)portCheckButtonClicked
 {
 	if ([self.navigationItem.rightBarButtonItem isEnabled]) {
-		[[[UIAlertView alloc] initWithTitle:LocalizedString(@"Failure") message:LocalizedString(@"Please save before performing a port check.") delegate:nil cancelButtonTitle:LocalizedString(@"Dismiss") otherButtonTitles:nil] show];
+        UIAlertController *alert = [UIAlertController
+            alertControllerWithTitle:LocalizedString(@"Failure")
+            message:LocalizedString(@"Please save before performing a port check.")
+            preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:LocalizedString(@"Dismiss")
+                                                  style:UIAlertActionStyleCancel handler:nil]];
+        [self presentViewController:alert animated:YES completion:nil];
 	}
 	else {
 		self.portChecker = [[PortChecker alloc] initForPort:[self.originalPreferences integerForKey:@"BindPort"] delay:NO withDelegate:self];
@@ -244,9 +250,14 @@
 	}
 	
 	[fPortCheckActivityIndicator stopAnimating];
-	
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:LocalizedString(@"Port check") message:msg delegate:nil cancelButtonTitle:LocalizedString(@"Dismiss") otherButtonTitles:nil];
-	[alert show];
+
+    UIAlertController *alert = [UIAlertController
+        alertControllerWithTitle:LocalizedString(@"Port check")
+        message:msg
+        preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:LocalizedString(@"Dismiss")
+                                              style:UIAlertActionStyleCancel handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)saveButtonClicked
@@ -417,8 +428,13 @@
 	BOOL on = [fUseWiFiSwitch isOn];
 
 	if (on == NO) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:LocalizedString(@"Disable WiFi") message:LocalizedString(@"Disabling WiFi is strongly discouraged! Please make sure this is what you want.") delegate:nil cancelButtonTitle:LocalizedString(@"Dismiss") otherButtonTitles:nil];
-		[alertView show];
+        UIAlertController *alertView = [UIAlertController
+            alertControllerWithTitle:LocalizedString(@"Disable WiFi")
+            message:LocalizedString(@"Disabling WiFi is strongly discouraged! Please make sure this is what you want.")
+            preferredStyle:UIAlertControllerStyleAlert];
+        [alertView addAction:[UIAlertAction actionWithTitle:LocalizedString(@"Dismiss")
+                                                      style:UIAlertActionStyleCancel handler:nil]];
+        [self presentViewController:alertView animated:YES completion:nil];
 	}
 
     [self.navigationItem.rightBarButtonItem setEnabled:YES];
@@ -434,7 +450,13 @@
     int bind_port = [[fBindPortTextField text] intValue];
 
     if (bind_port != [self.originalPreferences integerForKey:@"BindPort"]) {
-        [[[UIAlertView alloc] initWithTitle:LocalizedString(@"Cannot check port") message:LocalizedString(@"Bind port may have been modified. Please save before port test.") delegate:nil cancelButtonTitle:LocalizedString(@"Dismiss") otherButtonTitles:nil] show];
+        UIAlertController *alert = [UIAlertController
+            alertControllerWithTitle:LocalizedString(@"Cannot check port")
+            message:LocalizedString(@"Bind port may have been modified. Please save before port test.")
+            preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:LocalizedString(@"Dismiss")
+                                                  style:UIAlertActionStyleCancel handler:nil]];
+        [self presentViewController:alert animated:YES completion:nil];
     }
 }
 

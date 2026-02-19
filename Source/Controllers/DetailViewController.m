@@ -268,35 +268,41 @@
 
 - (void)removeButtonClicked:(id)sender
 {
-	NSString *msg = LocalizedString(@"Are you sure to remove this torrent?");
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:msg delegate:self cancelButtonTitle:LocalizedString(@"Cancel") destructiveButtonTitle:LocalizedString(@"Yes and remove data") otherButtonTitles:LocalizedString(@"Yes but keep data"), nil];
-	actionSheet.tag = REMOVE_COMFIRM_TAG;
-	[actionSheet showFromToolbar:self.navigationController.toolbar];	
+    NSString *msg = LocalizedString(@"Are you sure to remove this torrent?");
+    UIAlertController *actionSheet = [UIAlertController
+        alertControllerWithTitle:msg message:nil
+        preferredStyle:UIAlertControllerStyleActionSheet];
+
+    [actionSheet addAction:[UIAlertAction actionWithTitle:LocalizedString(@"Yes and remove data")
+                                                    style:UIAlertActionStyleDestructive
+                                                  handler:^(UIAlertAction *action) {
+        [self performRemove:YES];
+    }]];
+    [actionSheet addAction:[UIAlertAction actionWithTitle:LocalizedString(@"Yes but keep data")
+                                                    style:UIAlertActionStyleDefault
+                                                  handler:^(UIAlertAction *action) {
+        [self performRemove:NO];
+    }]];
+    [actionSheet addAction:[UIAlertAction actionWithTitle:LocalizedString(@"Cancel")
+                                                    style:UIAlertActionStyleCancel handler:nil]];
+
+    // Support iPad popover from the remove bar button item.
+    actionSheet.popoverPresentationController.barButtonItem = self.removeButton;
+    [self presentViewController:actionSheet animated:YES completion:nil];
 }
 
 - (void)performRemove:(BOOL)trashData
 {
     [self.UIUpdateTimer invalidate];
-    
+
     [self.controller removeTorrents:[NSArray arrayWithObject:self.torrent] trashData:trashData afterDelay:1.50f];
-    
+
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)sessionStatusChanged:(NSNotification*)notif
 {
 	[self updateUI];
-}
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    switch (actionSheet.tag) {
-		case REMOVE_COMFIRM_TAG: {
-			if (buttonIndex != actionSheet.cancelButtonIndex) {
-				[self performRemove:(buttonIndex == [actionSheet destructiveButtonIndex])];
-			}
-		}
-    }
 }
 
 - (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section
