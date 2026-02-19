@@ -11,9 +11,9 @@
 #import "Torrent.h"
 #import "TrackerNode.h"
 #import "NSString+Additions.h"
-#import "UIAlertViewPrivate.h"
+// UIAlertViewPrivate.h removed — UIAlertController provides text fields natively
 
-#define ADD_FROM_URL 010
+// ADD_FROM_URL removed — UIAlertController uses inline action blocks instead of delegate tags.
 #define ADD_TRACKER_BUTTON 1002
 #define REMOVE_TRACKER_BUTTON 1003
 
@@ -59,64 +59,66 @@
     }
 }
 
-- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-    if (alertView.tag == ADD_FROM_URL) {
-        if (buttonIndex == 0)
-            return;
-        else if (buttonIndex == 1) {
-            NSString *url = [[alertView textField] text];
-            BOOL exists = NO;
-            for (TrackerNode *node in Trackers) {
-                if (!exists) {
-                    if ([node fullAnnounceAddress] == url) {
-                        exists = YES;
-                    }
-                }
-            }
-            if (![url hasPrefix:@"http://"] || [url hasPrefix:@"https://"] || [url hasPrefix:@"udp://"] || exists) {
-                if (!exists) {
-                    [[[UIAlertView alloc] initWithTitle:LocalizedString(@"Error")
-                                           message:LocalizedString(@"The URL you entered is invalid. Just where did you get it?")
-                                          delegate:nil
-                                                cancelButtonTitle:LocalizedString(@"Dismiss") otherButtonTitles:nil, nil] show];
-                }
-                else {
-                    [[[UIAlertView alloc] initWithTitle:LocalizedString(@"Error")
-                                                 message:LocalizedString(@"A tracker with the same URL already exists, so both of them are the same trackers.")
-                                                delegate:nil
-                                        cancelButtonTitle:LocalizedString(@"Dismiss") otherButtonTitles:nil, nil] show];
-                }
-            } else {
-                [fTorrent addTrackerToNewTier:url];
+- (void)addButtonTouched {
+    UIAlertController *dialog = [UIAlertController alertControllerWithTitle:LocalizedString(@"Add Tracker")
+                                                                    message:LocalizedString(@"Enter the full tracker URL")
+                                                             preferredStyle:UIAlertControllerStyleAlert];
+    [dialog addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = LocalizedString(@"Enter tracker URL");
+        textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+        textField.autocorrectionType = UITextAutocorrectionTypeNo;
+        textField.enablesReturnKeyAutomatically = YES;
+        textField.keyboardAppearance = UIKeyboardAppearanceDefault;
+        textField.keyboardType = UIKeyboardTypeURL;
+        textField.returnKeyType = UIReturnKeyDone;
+        textField.secureTextEntry = NO;
+    }];
+
+    [dialog addAction:[UIAlertAction actionWithTitle:LocalizedString(@"Cancel")
+                                              style:UIAlertActionStyleCancel
+                                            handler:nil]];
+
+    __weak __typeof(self) weakSelf = self;
+    __weak UIAlertController *weakDialog = dialog;
+    [dialog addAction:[UIAlertAction actionWithTitle:LocalizedString(@"OK")
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *action) {
+        NSString *url = weakDialog.textFields.firstObject.text;
+
+        // Check for duplicate tracker using proper string comparison
+        BOOL exists = NO;
+        for (TrackerNode *node in weakSelf->Trackers) {
+            if ([[node fullAnnounceAddress] isEqualToString:url]) {
+                exists = YES;
+                break;
             }
         }
-        [self reloadTrackers];
 
-        [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]]
-                              withRowAnimation:UITableViewRowAnimationLeft];
-        [self.tableView reloadData];
-    }
-}
+        BOOL validPrefix = ([url hasPrefix:@"http://"] || [url hasPrefix:@"https://"] || [url hasPrefix:@"udp://"]);
 
-- (void)addButtonTouched {
-    UIAlertView *dialog = [[UIAlertView alloc] initWithTitle:LocalizedString(@"Add Tracker")
-                                                      message:LocalizedString(@"Enter the full tracker URL")
-                                                     delegate:self
-                                            cancelButtonTitle:LocalizedString(@"Cancel")
-                                            otherButtonTitles:LocalizedString(@"OK"), nil];
-    dialog.delegate = self;
-    dialog.tag = ADD_FROM_URL;
-    [dialog addTextFieldWithValue:@"" label:LocalizedString(@"Enter tracker URL")];
-    UITextField *textField = [dialog textField];
-    textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    textField.autocorrectionType = UITextAutocorrectionTypeNo;
-    textField.enablesReturnKeyAutomatically = YES;
-    textField.keyboardAppearance = UIKeyboardAppearanceDefault;
-    textField.keyboardType = UIKeyboardTypeURL;
-    textField.returnKeyType = UIReturnKeyDone;
-    textField.secureTextEntry = NO;
-    [dialog show];
+        if (!validPrefix || exists) {
+            NSString *errorMsg = exists
+                ? LocalizedString(@"A tracker with the same URL already exists, so both of them are the same trackers.")
+                : LocalizedString(@"The URL you entered is invalid. Just where did you get it?");
+
+            UIAlertController *errorAlert = [UIAlertController alertControllerWithTitle:LocalizedString(@"Error")
+                                                                                message:errorMsg
+                                                                         preferredStyle:UIAlertControllerStyleAlert];
+            [errorAlert addAction:[UIAlertAction actionWithTitle:LocalizedString(@"Dismiss")
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:nil]];
+            [weakSelf presentViewController:errorAlert animated:YES completion:nil];
+        } else {
+            [weakSelf->fTorrent addTrackerToNewTier:url];
+
+            [weakSelf reloadTrackers];
+            [weakSelf.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]]
+                                      withRowAnimation:UITableViewRowAnimationLeft];
+            [weakSelf.tableView reloadData];
+        }
+    }]];
+
+    [self presentViewController:dialog animated:YES completion:nil];
 }
 
 - (void)removeButtonTouched {
@@ -165,7 +167,13 @@
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
         if (!isInterfacePad) {
-            [[[UIAlertView alloc] initWithTitle:@"" message:cell.TrackerLastAnnounceTime.text delegate:nil cancelButtonTitle:LocalizedString(@"OK") otherButtonTitles:nil] show];
+            UIAlertController *infoAlert = [UIAlertController alertControllerWithTitle:@""
+                                                                               message:cell.TrackerLastAnnounceTime.text
+                                                                        preferredStyle:UIAlertControllerStyleAlert];
+            [infoAlert addAction:[UIAlertAction actionWithTitle:LocalizedString(@"OK")
+                                                          style:UIAlertActionStyleCancel
+                                                        handler:nil]];
+            [self presentViewController:infoAlert animated:YES completion:nil];
         }
     } else {
         for (UIBarButtonItem *item in self.toolbarItems) {

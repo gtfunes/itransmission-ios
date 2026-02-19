@@ -15,7 +15,7 @@
 @class StatisticsView;
 @class PrefViewController;
 
-@interface TorrentViewController : StatisticsViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
+@interface TorrentViewController : StatisticsViewController <UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, retain) NSTimer *UIUpdateTimer;
 @property (nonatomic, retain) IBOutlet UITableView *tableView;

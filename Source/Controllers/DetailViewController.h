@@ -13,7 +13,7 @@
 @class Controller;
 @class FlexibleLabelCell;
 
-@interface DetailViewController : StatisticsViewController <UITableViewDelegate, UITableViewDataSource, UIActionSheetDelegate> {
+@interface DetailViewController : StatisticsViewController <UITableViewDelegate, UITableViewDataSource> {
     __weak Torrent *fTorrent;
     
 	UITableView *fTableView;

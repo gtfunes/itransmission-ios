@@ -17,7 +17,7 @@
 #import "BackgroundTask.h"
 #import "UncaughtExceptionHandler.h"
 #import "AmIBeingDebugged.h"
-#import "UIAlertView+CompletionHandler.h"
+#import <UserNotifications/UserNotifications.h>
 #import "WebHelper-FileService.h"
 #include <stdlib.h>
 
@@ -90,17 +90,19 @@ static tr_rpc_callback_status rpcCallback(tr_session *handle, tr_rpc_callback_ty
     [self transmissionInitialize];
 
     if (AmIBeingDebugged()) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:LocalizedString(@"Warning") message:LocalizedString(@"Be careful, debugging in Xcode changes the app's documents path which will corrupt your downloading torrents, continue anyway?") delegate:nil cancelButtonTitle:LocalizedString(@"YES") otherButtonTitles:LocalizedString(@"NO"), nil];
+        UIAlertController *alert = [UIAlertController
+            alertControllerWithTitle:LocalizedString(@"Warning")
+            message:LocalizedString(@"Be careful, debugging in Xcode changes the app's documents path which will corrupt your downloading torrents, continue anyway?")
+            preferredStyle:UIAlertControllerStyleAlert];
 
-        __weak UIAlertView *weakAlert = alert;
+        [alert addAction:[UIAlertAction actionWithTitle:LocalizedString(@"YES")
+                                                  style:UIAlertActionStyleCancel
+                                                handler:nil]];
+        [alert addAction:[UIAlertAction actionWithTitle:LocalizedString(@"NO")
+                                                  style:UIAlertActionStyleDestructive
+                                                handler:^(UIAlertAction *action) { exit(0); }]];
 
-        [alert setCompletionHandler:^(NSUInteger buttonIndex) {
-            if (buttonIndex != weakAlert.cancelButtonIndex) {
-                exit(0);
-            }
-        }];
-
-        [alert show];
+        [self.torrentViewController presentViewController:alert animated:YES completion:nil];
     }
 
     return YES;
@@ -615,7 +617,13 @@ static tr_rpc_callback_status rpcCallback(tr_session *handle, tr_rpc_callback_ty
     [data writeToFile:path options:0 error:&error];
     error = [self openFile:path addType:ADD_URL forcePath:[self defaultDownloadDir]];
     if (error) {
-        [[[UIAlertView alloc] initWithTitle:LocalizedString(@"Add from URL") message:[NSString stringWithFormat:LocalizedString(@"Adding from %@ failed. %@"), url, [error localizedDescription]]  delegate:nil cancelButtonTitle:LocalizedString(@"Dismiss") otherButtonTitles:nil] show];
+        UIAlertController *alert = [UIAlertController
+            alertControllerWithTitle:LocalizedString(@"Add from URL")
+            message:[NSString stringWithFormat:LocalizedString(@"Adding from %@ failed. %@"), url, [error localizedDescription]]
+            preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:LocalizedString(@"Dismiss")
+                                                  style:UIAlertActionStyleCancel handler:nil]];
+        [self.torrentViewController presentViewController:alert animated:YES completion:nil];
     }
     [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
     [fActivities removeObject:fetcher];
@@ -623,9 +631,14 @@ static tr_rpc_callback_status rpcCallback(tr_session *handle, tr_rpc_callback_ty
 
 - (void)torrentFetcher:(TorrentFetcher *)fetcher failedToFetchFromURL:(NSString *)url withError:(NSError *)error
 {
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:LocalizedString(@"Add torrent") message:[NSString stringWithFormat:LocalizedString(@"Failed to fetch torrent URL: \"%@\". \nError: %@"), url, [error localizedDescription]] delegate:nil cancelButtonTitle:LocalizedString(@"Dismiss") otherButtonTitles:nil];
-    [alertView show];
-    [fActivities removeObject:fetcher];    
+    UIAlertController *alert = [UIAlertController
+        alertControllerWithTitle:LocalizedString(@"Add torrent")
+        message:[NSString stringWithFormat:LocalizedString(@"Failed to fetch torrent URL: \"%@\". \nError: %@"), url, [error localizedDescription]]
+        preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:LocalizedString(@"Dismiss")
+                                              style:UIAlertActionStyleCancel handler:nil]];
+    [self.torrentViewController presentViewController:alert animated:YES completion:nil];
+    [fActivities removeObject:fetcher];
     [self decreaseActivityCounter];
 }
 
