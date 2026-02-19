@@ -41,12 +41,8 @@ void interruptionListenerCallback (void *inUserData, UInt32 interruptionState);
     _selector = selector_;
 
     [self initBackgroudTask];
-
-    __weak __typeof(self) weakSelf = self;
-
-    [[UIApplication sharedApplication] setKeepAliveTimeout:600 handler:^{
-        [weakSelf initBackgroudTask];
-    }];
+    // setKeepAliveTimeout:handler: was deprecated in iOS 9 and is a no-op on
+    // all currently supported iOS versions — removed.
 }
 
 -(void) initBackgroudTask
