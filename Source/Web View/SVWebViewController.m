@@ -10,8 +10,9 @@
 #import "SVWebViewControllerActivitySafari.h"
 #import "SVWebViewController.h"
 #import "Controller.h"
+#import <WebKit/WebKit.h>
 
-@interface SVWebViewController () <UIWebViewDelegate>
+@interface SVWebViewController () <WKNavigationDelegate>
 
 @property (nonatomic, strong) UIBarButtonItem *backBarButtonItem;
 @property (nonatomic, strong) UIBarButtonItem *forwardBarButtonItem;
@@ -19,7 +20,7 @@
 @property (nonatomic, strong) UIBarButtonItem *stopBarButtonItem;
 @property (nonatomic, strong) UIBarButtonItem *actionBarButtonItem;
 
-@property (nonatomic, strong) UIWebView *webView;
+@property (nonatomic, strong) WKWebView *webView;
 @property (nonatomic, strong) NSURL *URL;
 
 - (id)initWithURL:(NSURL*)URL;
@@ -47,9 +48,9 @@
 
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 
-    self.webView.delegate = nil;
+    self.webView.navigationDelegate = nil;
     self.webView = nil;
-    
+
     _backBarButtonItem = nil;
     _forwardBarButtonItem = nil;
     _refreshBarButtonItem = nil;
@@ -115,11 +116,12 @@
 
 #pragma mark - Getters
 
-- (UIWebView*)webView {
-    if(!_webView) {
-        _webView = [[UIWebView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-        _webView.delegate = self;
-        _webView.scalesPageToFit = YES;
+- (WKWebView *)webView {
+    if (!_webView) {
+        WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
+        _webView = [[WKWebView alloc] initWithFrame:[UIScreen mainScreen].bounds configuration:config];
+        _webView.navigationDelegate = self;
+        _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     }
     return _webView;
 }
@@ -219,31 +221,36 @@
     }
 }
 
-#pragma mark - UIWebViewDelegate
+#pragma mark - WKNavigationDelegate
 
-- (void)webViewDidStartLoad:(UIWebView *)webView {
-	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     [self updateToolbarItems];
 }
 
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
-	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 
     NSString *jsCode = @"function MyIPhoneApp_ModifyWindowOpen() { window.open = function(url,target,param) { if (url && url.length > 0) { if (!target) target = '_blank'; if (target == '_blank') { location.href = 'newtab:'+escape(url); } else { location.href = url; } } } }";
 
-    [webView stringByEvaluatingJavaScriptFromString:jsCode];
-
-    [webView stringByEvaluatingJavaScriptFromString:@"MyIPhoneApp_ModifyWindowOpen()"];
-
-    self.navigationItem.title = [webView stringByEvaluatingJavaScriptFromString:@"document.title"];
+    __weak __typeof(self) weakSelf = self;
+    [webView evaluateJavaScript:jsCode completionHandler:nil];
+    [webView evaluateJavaScript:@"MyIPhoneApp_ModifyWindowOpen()" completionHandler:nil];
+    [webView evaluateJavaScript:@"document.title" completionHandler:^(id result, NSError *error) {
+        if ([result isKindOfClass:[NSString class]])
+            weakSelf.navigationItem.title = result;
+    }];
 
     [self updateToolbarItems];
 }
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
-	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    [self updateToolbarItems];
+}
 
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     [self updateToolbarItems];
 }
 
@@ -268,8 +275,8 @@
 
 - (void)actionButtonClicked:(id)sender {
     NSArray *activities = @[[SVWebViewControllerActivitySafari new], [SVWebViewControllerActivityChrome new]];
-    
-    UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:@[self.self.webView.request.URL] applicationActivities:activities];
+
+    UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:@[self.webView.URL] applicationActivities:activities];
     [activityController.popoverPresentationController setBarButtonItem:self.actionBarButtonItem];
 
     [self presentViewController:activityController animated:YES completion:nil];
@@ -279,43 +286,33 @@
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
-    NSURL *requestedURL = [request URL];
+    NSURL *requestedURL = navigationAction.request.URL;
     NSString *scheme = [requestedURL scheme];
 
     if ([scheme isEqualToString:@"itms"] || [scheme isEqualToString:@"newtab"]) {
-        return NO;
+        decisionHandler(WKNavigationActionPolicyCancel);
+        return;
     }
 
     NSString *fileExtension = [requestedURL pathExtension];
-    NSString *magnet;
-    NSString *torrent;
 
-    if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+    if (navigationAction.navigationType == WKNavigationTypeLinkActivated) {
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-        
-        if([scheme isEqualToString:@"magnet"])
-        {
-            magnet = [requestedURL absoluteString];
-            
-            // add magnet
+
+        if ([scheme isEqualToString:@"magnet"]) {
+            NSString *magnet = [requestedURL absoluteString];
             [self.transmission addTorrentFromMagnet:magnet];
-            
-            // close view controller
             [self.controller popViewControllerAnimated:YES];
-        } else if([fileExtension isEqualToString:@"torrent"]) {
-            torrent = [requestedURL absoluteString];
-            
-            // add torrent
+        } else if ([fileExtension isEqualToString:@"torrent"]) {
+            NSString *torrent = [requestedURL absoluteString];
             [self.transmission addTorrentFromURL:torrent];
-            
-            // close view controller
             [self.controller popViewControllerAnimated:YES];
         }
     }
 
-    return YES;
+    decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 @end

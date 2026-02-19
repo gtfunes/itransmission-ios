@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <WebKit/WebKit.h>
 
-@interface InfoViewController : UIViewController <UIWebViewDelegate>
+@interface InfoViewController : UIViewController <WKNavigationDelegate>
 {
     NSString *pageName;
     UIActivityIndicatorView *activityIndicator;

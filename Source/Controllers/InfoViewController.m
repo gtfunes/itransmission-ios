@@ -7,6 +7,7 @@
 //
 
 #import "InfoViewController.h"
+#import <WebKit/WebKit.h>
 
 #import "event2/event-config.h"
 
@@ -31,8 +32,8 @@
 
 - (void)loadView
 {
-    UIWebView *view = [[UIWebView alloc] init];
-    view.delegate = self;
+    WKWebView *view = [[WKWebView alloc] init];
+    view.navigationDelegate = self;
     self.view = view;
 }
 
@@ -60,41 +61,50 @@
     self.pageName = nil;
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL fileURLWithPath:pagePath] cachePolicy:NSURLCacheStorageNotAllowed timeoutInterval:5.0f];
-    [(UIWebView*)self.view loadRequest:request];
+    [(WKWebView *)self.view loadRequest:request];
     
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
-{    
-    if (![[[request URL] scheme] isEqualToString:@"file"]) {
-        [[UIApplication sharedApplication] openURL:[request URL]];
-        return NO;
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
+{
+    if (![[[navigationAction.request URL] scheme] isEqualToString:@"file"]) {
+        [[UIApplication sharedApplication] openURL:[navigationAction.request URL]
+                                           options:@{}
+                                 completionHandler:nil];
+        decisionHandler(WKNavigationActionPolicyCancel);
+        return;
     }
-    
-    /*if ([[[[request URL] absoluteString] lastPathComponent] isEqualToString:@"about.html"]) {
-        
-    }*/
-    
+
     [self.activityIndicator startAnimating];
-    
-    return YES;
+    decisionHandler(WKNavigationActionPolicyAllow);
 }
 
-- (void)webViewDidFinishLoad:(UIWebView *)webView{
-    NSString *title = [webView stringByEvaluatingJavaScriptFromString:@"document.title"];
-    self.title = title;
-    
-    if ([[[[webView.request URL] absoluteString] lastPathComponent] isEqualToString:@"about.html"]) {
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
+{
+    __weak __typeof(self) weakSelf = self;
+
+    [webView evaluateJavaScript:@"document.title" completionHandler:^(id result, NSError *error) {
+        if ([result isKindOfClass:[NSString class]])
+            weakSelf.title = result;
+    }];
+
+    if ([[[webView.URL absoluteString] lastPathComponent] isEqualToString:@"about.html"]) {
         NSString *viTrans = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-        [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.getElementById('itransmission_version').innerHTML = '%@'", viTrans]];
-        [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.getElementById('libtransmission_version').innerHTML = '%s'", LONG_VERSION_STRING]];
-        [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.getElementById('libevent_version').innerHTML = '%s'", _EVENT_VERSION]];
+        [webView evaluateJavaScript:[NSString stringWithFormat:@"document.getElementById('itransmission_version').innerHTML = '%@'", viTrans] completionHandler:nil];
+        [webView evaluateJavaScript:[NSString stringWithFormat:@"document.getElementById('libtransmission_version').innerHTML = '%s'", LONG_VERSION_STRING] completionHandler:nil];
+        [webView evaluateJavaScript:[NSString stringWithFormat:@"document.getElementById('libevent_version').innerHTML = '%s'", _EVENT_VERSION] completionHandler:nil];
     }
-    
+
     [self.activityIndicator stopAnimating];
 }
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error
+{
+    DDLogDebug(@"%@", [error description]);
+    [self.activityIndicator stopAnimating];
+}
+
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error
 {
     DDLogDebug(@"%@", [error description]);
     [self.activityIndicator stopAnimating];
