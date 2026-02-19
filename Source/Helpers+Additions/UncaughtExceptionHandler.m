@@ -13,6 +13,7 @@
 //
 
 #import "UncaughtExceptionHandler.h"
+#import <UserNotifications/UserNotifications.h>
 #include <libkern/OSAtomic.h>
 #include <execinfo.h>
 
@@ -45,46 +46,51 @@ const NSInteger UncaughtExceptionHandlerReportAddressCount = 5;
 	 return backtrace;
 }
 
-- (void)alertView:(UIAlertView *)anAlertView clickedButtonAtIndex:(NSInteger)anIndex
-{
-	if (anIndex == 0)
-	{
-		dismissed = YES;
-	}
-}
-
 - (void)validateAndSaveCriticalApplicationData
 {
-	
+
 }
 
 - (void)handleException:(NSException *)exception
 {
 	[self validateAndSaveCriticalApplicationData];
-	
+
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:LocalizedString(@"Unhandled exception")
-                                                        message:[NSString stringWithFormat:LocalizedString(@"You can try to continue but the application may be unstable.\n\nDebug details follow:\n%@\n%@"),
-                  [exception reason], [[exception userInfo] objectForKey:UncaughtExceptionHandlerAddressesKey]]
-                                                       delegate:self
-                                              cancelButtonTitle:LocalizedString(@"Quit")
-                                              otherButtonTitles:LocalizedString(@"Continue"), nil];
+        UIAlertController *alert = [UIAlertController
+            alertControllerWithTitle:LocalizedString(@"Unhandled exception")
+            message:[NSString stringWithFormat:LocalizedString(@"You can try to continue but the application may be unstable.\n\nDebug details follow:\n%@\n%@"),
+                     [exception reason], [[exception userInfo] objectForKey:UncaughtExceptionHandlerAddressesKey]]
+            preferredStyle:UIAlertControllerStyleAlert];
 
-        [alert show];
+        [alert addAction:[UIAlertAction actionWithTitle:LocalizedString(@"Quit")
+                                                  style:UIAlertActionStyleDestructive
+                                                handler:^(UIAlertAction *action) {
+            // dismissed is set below after the run-loop drains; setting it here
+            // from the Quit action causes the run-loop to exit and the exception
+            // to be re-raised (original quit path).
+            self->dismissed = YES;
+        }]];
+        [alert addAction:[UIAlertAction actionWithTitle:LocalizedString(@"Continue")
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction *action) {
+            self->dismissed = YES;
+        }]];
+
+        // Present on the key window's root view controller.
+        UIViewController *rootVC = [UIApplication sharedApplication].keyWindow.rootViewController;
+        [rootVC presentViewController:alert animated:YES completion:nil];
     } else {
-        UILocalNotification *localNotif = [[UILocalNotification alloc] init];
-        if (localNotif == nil)
-            return;
-        
-        localNotif.fireDate = nil;
+        UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+        content.body = [NSString stringWithFormat:LocalizedString(@"The app has crashed: %@"), [exception reason]];
+        content.sound = [UNNotificationSound defaultSound];
+        content.badge = @([[UIApplication sharedApplication] applicationIconBadgeNumber] + 1);
 
-        localNotif.alertBody = [NSString stringWithFormat:LocalizedString(@"The app has crashed: %@"), [exception reason]];
-        localNotif.alertAction = LocalizedString(@"Reopen");
-
-        localNotif.soundName = UILocalNotificationDefaultSoundName;
-        localNotif.applicationIconBadgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber] + 1;
-
-        [[UIApplication sharedApplication] scheduleLocalNotification:localNotif];
+        UNNotificationRequest *request = [UNNotificationRequest
+            requestWithIdentifier:[[NSUUID UUID] UUIDString]
+                          content:content
+                          trigger:nil];
+        [[UNUserNotificationCenter currentNotificationCenter]
+            addNotificationRequest:request withCompletionHandler:nil];
 
         dismissed = YES;
     }

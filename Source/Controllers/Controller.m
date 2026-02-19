@@ -63,9 +63,11 @@ static tr_rpc_callback_status rpcCallback(tr_session *handle, tr_rpc_callback_ty
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     InstallUncaughtExceptionHandler();
 
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0) {
-        [application registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
-    }
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge)
+                          completionHandler:^(BOOL granted, NSError *error) {
+        // Permission granted asynchronously; no action required here.
+    }];
 
     self.torrentViewController = [[TorrentViewController alloc] initWithNibName:@"TorrentViewController" bundle:nil];
     self.torrentViewController.controller = self;
@@ -1004,27 +1006,19 @@ static tr_rpc_callback_status rpcCallback(tr_session *handle, tr_rpc_callback_ty
 
 - (void)postBGNotif:(NSString *)message {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-		UILocalNotification *localNotif = [[UILocalNotification alloc] init];
-		if (localNotif == nil)
-			return;
-        
-		localNotif.fireDate = nil;
-		
-		// Notification details
-		localNotif.alertBody = message;
-		// Set the action button
-		localNotif.alertAction = LocalizedString(@"View");
-		
-		localNotif.soundName = UILocalNotificationDefaultSoundName;
-		localNotif.applicationIconBadgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber] + 1;
-		
-		// Specify custom data for the notification
-		//NSDictionary *infoDict = [NSDictionary dictionaryWithObject:file forKey:@"Downloaded"];
-		//localNotif.userInfo = infoDict;
-		
-		// Schedule the notification
-		[[UIApplication sharedApplication] scheduleLocalNotification:localNotif];
-	}
+        UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+        content.body = message;
+        content.sound = [UNNotificationSound defaultSound];
+        content.badge = @([[UIApplication sharedApplication] applicationIconBadgeNumber] + 1);
+
+        // nil trigger = deliver immediately
+        UNNotificationRequest *request = [UNNotificationRequest
+            requestWithIdentifier:[[NSUUID UUID] UUIDString]
+                          content:content
+                          trigger:nil];
+        [[UNUserNotificationCenter currentNotificationCenter]
+            addNotificationRequest:request withCompletionHandler:nil];
+    }
 } 
 
 @end
