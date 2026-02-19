@@ -28,6 +28,14 @@
 
 @implementation TorrentViewController
 
+- (void)dealloc
+{
+    // Remove all NSNotificationCenter observers registered in viewDidLoad.
+    // Without this, if this view controller is ever deallocated the notification
+    // center would fire into freed memory causing an EXC_BAD_ACCESS crash.
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 @synthesize tableView;
 @synthesize activityIndicator;
 @synthesize activityItemView;
