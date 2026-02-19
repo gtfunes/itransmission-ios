@@ -503,8 +503,14 @@ int trashDataFile(const char * filename)
     if (oldCount < [newComponents count] && [[newComponents objectAtIndex: oldCount] isEqualToString: [self name]]
         && [folder hasPrefix: oldFolder])
     {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:LocalizedString(@"Error") message:[NSString stringWithFormat: LocalizedString(@"The move operation of \"%@\" cannot be done."), [self name]] delegate:nil cancelButtonTitle:LocalizedString(@"Dismiss") otherButtonTitles: nil];
-        [alert show];
+        UIAlertController *alert = [UIAlertController
+            alertControllerWithTitle:LocalizedString(@"Error")
+            message:[NSString stringWithFormat:LocalizedString(@"The move operation of \"%@\" cannot be done."), [self name]]
+            preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:LocalizedString(@"Dismiss")
+                                                  style:UIAlertActionStyleCancel handler:nil]];
+        UIViewController *rootVC = [UIApplication sharedApplication].keyWindow.rootViewController;
+        [rootVC presentViewController:alert animated:YES completion:nil];
 
         return;
     }
