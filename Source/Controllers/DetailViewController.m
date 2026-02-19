@@ -155,13 +155,21 @@
 	}
     else if (indexPath.section == ACTIONS_SECTION) {
         if (indexPath.row == RECHECK_DATA_ROW) {
-            [fTorrent resetCache];
+            // Guard the weak ref: torrent may have been removed between the
+            // tap and this handler executing.
+            Torrent *torrent = fTorrent;
+            if (torrent) {
+                [torrent resetCache];
+            }
         }
     }
     else if (indexPath.section == GENERAL_INFO_SECTION) {
         if (indexPath.row == MAGNET_ROW) {
-            [[UIPasteboard generalPasteboard] setString:[fTorrent magnetLink]];
-            [fTorrentMagnetLinkLabel setText:LocalizedString(@"Copied!")];
+            Torrent *torrent = fTorrent;
+            if (torrent) {
+                [[UIPasteboard generalPasteboard] setString:[torrent magnetLink]];
+                [fTorrentMagnetLinkLabel setText:LocalizedString(@"Copied!")];
+            }
         }
     }
 
@@ -482,7 +490,15 @@
 
 - (void)updateUI
 {
-    if (![self.controller torrentsCount]) {
+    // Capture the weak ivar as a strong local reference for the entire duration
+    // of this method. fTorrent is __weak, so it can be zeroed by ARC on any
+    // thread at any moment (e.g. when the torrent is removed while the timer
+    // fires). Without this capture every individual access to fTorrent is a
+    // separate load that could observe nil independently, leading to partially
+    // updated UI or, worse, EXC_BAD_ACCESS from a mid-method nil dereference.
+    Torrent *torrent = fTorrent;
+
+    if (!torrent || ![self.controller torrentsCount]) {
         [self.navigationController popViewControllerAnimated:YES];
 
         return;
@@ -491,7 +507,7 @@
         BOOL found = NO;
 
         for (int i = 0; i < count; i++) {
-            if ([[self.controller torrentAtIndex:i] isEqual:fTorrent]) {
+            if ([[self.controller torrentAtIndex:i] isEqual:torrent]) {
                 found = YES;
 
                 break;
@@ -506,27 +522,26 @@
     }
 
 	if ([self.controller isSessionActive]) {
-		[self.startButton setEnabled:![fTorrent isActive]];
-		[self.pauseButton setEnabled:[fTorrent isActive]];
+		[self.startButton setEnabled:![torrent isActive]];
+		[self.pauseButton setEnabled:[torrent isActive]];
 	}
 	else {
 		[self.startButton setEnabled:NO];
 		[self.pauseButton setEnabled:NO];
 	}
-	
-	[fTorrent update];
-	[fTotalSizeLabel setText:[NSString stringForFileSize:[fTorrent size]]];
-	[fCompletedSizeLabel setText:[NSString stringForFileSize:[fTorrent haveVerified]]];
-	[fProgressLabel setText:[NSString stringWithFormat:@"%.2f%%",[fTorrent progress] * 100.0f]];
-	[fUploadedSizeLabel setText:[NSString stringForFileSize:[fTorrent uploadedTotal]]];
-	[fDownloadedSizeLabel setText:[NSString stringForFileSize:[fTorrent downloadedTotal]]];
 
-    NSMutableArray *fPeers = [[NSMutableArray alloc] init];
-    [fPeers removeAllObjects];
-    [fPeers addObjectsFromArray:[fTorrent peers]];
+	[torrent update];
+	[fTotalSizeLabel setText:[NSString stringForFileSize:[torrent size]]];
+	[fCompletedSizeLabel setText:[NSString stringForFileSize:[torrent haveVerified]]];
+	[fProgressLabel setText:[NSString stringWithFormat:@"%.2f%%",[torrent progress] * 100.0f]];
+	[fUploadedSizeLabel setText:[NSString stringForFileSize:[torrent uploadedTotal]]];
+	[fDownloadedSizeLabel setText:[NSString stringForFileSize:[torrent downloadedTotal]]];
+
+    NSMutableArray *peers = [[NSMutableArray alloc] init];
+    [peers addObjectsFromArray:[torrent peers]];
     int totalSeeder = 0;
     int totalPeers = 0;
-    for (NSDictionary *peer in fPeers) {
+    for (NSDictionary *peer in peers) {
         BOOL isSeed = [[peer valueForKey:@"Seed"] boolValue];
         if (isSeed) {
             totalSeeder = totalSeeder + 1;
@@ -534,20 +549,20 @@
             totalPeers = totalPeers + 1;
         }
     }
-    totalSeeder = (int)totalSeeder + (int)[fTorrent webSeedCount];
+    totalSeeder = (int)totalSeeder + (int)[torrent webSeedCount];
 
     [fTorrentSeedersLabel setText:[NSString stringWithFormat:@"%d", totalSeeder]];
     [fTorrentPeersLabel setText:[NSString stringWithFormat:@"%d", totalPeers]];
-    
-    int activityTimeInSeconds = (int)[fTorrent secondsDownloading] + (int)[fTorrent secondsSeeding];
+
+    int activityTimeInSeconds = (int)[torrent secondsDownloading] + (int)[torrent secondsSeeding];
     [fTorrentActivityLabel setText:[NSString stringForTime:activityTimeInSeconds]];
     [fTorrentActivityLabel setTextAlignment:NSTextAlignmentRight];
 
-	BOOL hasError = [fTorrent isAnyErrorOrWarning];
+	BOOL hasError = [torrent isAnyErrorOrWarning];
 	if (hasError) {
 		if (!displayedError) {
             displayedError = YES;
-            [fErrorMessageLabel setText:[fTorrent errorMessage]];
+            [fErrorMessageLabel setText:[torrent errorMessage]];
             [fErrorMessageCell resizeToFitText];
 			[self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:ERROR_MESSAGE_ROW inSection:STATE_SECTION]] withRowAnimation:UITableViewRowAnimationTop];
 		}
@@ -558,17 +573,17 @@
 			[self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:ERROR_MESSAGE_ROW inSection:STATE_SECTION]] withRowAnimation:UITableViewRowAnimationTop];
 		}
 	}
-    
-    if ([[fTorrent stateString] isEqualToString:LocalizedString(@"Downloading")])
+
+    if ([[torrent stateString] isEqualToString:LocalizedString(@"Downloading")])
         [fStartPauseButton setTitle:LocalizedString(@"Start") forState:UIControlStateNormal];
     else
         [fStartPauseButton setTitle:LocalizedString(@"Pause") forState:UIControlStateNormal];
-	
-	[fStateLabel setText:[fTorrent stateString]];
-	[fRatioLabel setText:[NSString stringForRatio:[fTorrent ratio]]];
-	
-	[fULSpeedLabel setText:[NSString stringForSpeed:[fTorrent uploadRate]]];
-	[fDLSpeedLabel setText:[NSString stringForSpeed:[fTorrent downloadRate]]];
+
+	[fStateLabel setText:[torrent stateString]];
+	[fRatioLabel setText:[NSString stringForRatio:[torrent ratio]]];
+
+	[fULSpeedLabel setText:[NSString stringForSpeed:[torrent uploadRate]]];
+	[fDLSpeedLabel setText:[NSString stringForSpeed:[torrent downloadRate]]];
 }
 
 @end
