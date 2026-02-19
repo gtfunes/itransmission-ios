@@ -198,6 +198,17 @@ int trashDataFile(const char * filename)
 {
     [[NSNotificationCenter defaultCenter] removeObserver: self];
 
+    // Safety net: ensure all C callbacks are cleared so that no libtransmission
+    // callback can fire with a dangling pointer to this (now-deallocated) object.
+    // Normally closeRemoveTorrent: handles this before tr_torrentRemove, but
+    // this guard covers any path where the Torrent is released without that call.
+    if (fHandle) {
+        tr_torrentSetCompletenessCallback(fHandle, NULL, NULL);
+        tr_torrentSetRatioLimitHitCallback(fHandle, NULL, NULL);
+        tr_torrentSetIdleLimitHitCallback(fHandle, NULL, NULL);
+        tr_torrentSetMetadataCallback(fHandle, NULL, NULL);
+    }
+
     if (fFileStat)
         tr_torrentFilesFree(fFileStat, (unsigned int)[self fileCount]);
 }
@@ -214,6 +225,15 @@ int trashDataFile(const char * filename)
 
 - (void) closeRemoveTorrent: (BOOL) trashFiles
 {
+    // Unregister all C callbacks BEFORE removing the torrent.
+    // The callbacks hold a raw (unsafe) pointer to this Objective-C object.
+    // Without this, libtransmission may invoke a callback after this Torrent
+    // instance has been deallocated, causing an EXC_BAD_ACCESS crash.
+    tr_torrentSetCompletenessCallback(fHandle, NULL, NULL);
+    tr_torrentSetRatioLimitHitCallback(fHandle, NULL, NULL);
+    tr_torrentSetIdleLimitHitCallback(fHandle, NULL, NULL);
+    tr_torrentSetMetadataCallback(fHandle, NULL, NULL);
+
     tr_torrentRemove(fHandle, trashFiles, trashDataFile);
 }
 
