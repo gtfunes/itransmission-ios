@@ -340,7 +340,28 @@
 
 - (void)closeButtonClicked
 {
-    [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
+    // If the save button is enabled the user has unsaved changes — warn before discarding
+    if ([self.navigationItem.rightBarButtonItem isEnabled]) {
+        UIAlertController *alert = [UIAlertController
+            alertControllerWithTitle:LocalizedString(@"Unsaved Changes")
+            message:LocalizedString(@"You have unsaved changes. Are you sure you want to close without saving?")
+            preferredStyle:UIAlertControllerStyleAlert];
+
+        [alert addAction:[UIAlertAction
+            actionWithTitle:LocalizedString(@"Discard Changes")
+                      style:UIAlertActionStyleDestructive
+                    handler:^(UIAlertAction *action) {
+            [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
+        }]];
+        [alert addAction:[UIAlertAction
+            actionWithTitle:LocalizedString(@"Keep Editing")
+                      style:UIAlertActionStyleCancel
+                    handler:nil]];
+
+        [self presentViewController:alert animated:YES completion:nil];
+    } else {
+        [self.parentViewController dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 - (void)viewDidLoad {
