@@ -73,7 +73,21 @@ void interruptionListenerCallback (void *inUserData, UInt32 interruptionState);
     // nothing. Use self.selector (the stored SEL ivar) instead.
     if (self.target && [self.target respondsToSelector:self.selector])
     {
-        [self.target performSelector:self.selector withObject:notification];
+        NSMethodSignature *sig = [self.target methodSignatureForSelector:self.selector];
+        if (sig)
+        {
+            NSInvocation *inv = [NSInvocation invocationWithMethodSignature:sig];
+            [inv setTarget:self.target];
+            [inv setSelector:self.selector];
+            // Objective-C methods have hidden arguments self and _cmd at indices 0 and 1.
+            // The first explicit parameter is at index 2.
+            NSNotification *arg = notification;
+            if (sig.numberOfArguments > 2)
+            {
+                [inv setArgument:&arg atIndex:2];
+            }
+            [inv invoke];
+        }
     }
 }
 
@@ -84,7 +98,20 @@ void interruptionListenerCallback (void *inUserData, UInt32 interruptionState);
     // Forward the tick to the external target/selector stored in ivars.
     if (self.target && [self.target respondsToSelector:self.selector])
     {
-        [self.target performSelector:self.selector withObject:nil];
+        NSMethodSignature *sig = [self.target methodSignatureForSelector:self.selector];
+        if (sig)
+        {
+            NSInvocation *inv = [NSInvocation invocationWithMethodSignature:sig];
+            [inv setTarget:self.target];
+            [inv setSelector:self.selector];
+            // If the selector expects one parameter, pass nil.
+            if (sig.numberOfArguments > 2)
+            {
+                id nilArg = nil;
+                [inv setArgument:&nilArg atIndex:2];
+            }
+            [inv invoke];
+        }
     }
 }
 
@@ -170,3 +197,4 @@ void interruptionListenerCallback (void *inUserData, UInt32 interruptionState);
 }
 
 @end
+
