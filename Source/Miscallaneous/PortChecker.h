@@ -36,16 +36,16 @@ typedef enum
 - (void)portCheckerDidFinishProbing:(PortChecker*)c;
 @end
 
-@interface PortChecker : NSObject
-{    
+@interface PortChecker : NSObject <NSURLSessionDataDelegate>
+{
     NSObject<PortCheckerDelegate> *fDelegate;
     port_status_t fStatus;
-    
-    NSURLConnection * fConnection;
-    NSMutableData * fPortProbeData;
+
+    NSURLSessionDataTask *fConnection;
+    NSMutableData *fPortProbeData;
 
     NSInteger fPortNumber;
-    NSTimer * fTimer;
+    NSTimer *fTimer;
 }
 @property (nonatomic, assign) NSInteger portToCheck;
 

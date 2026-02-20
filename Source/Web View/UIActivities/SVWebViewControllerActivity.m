@@ -15,7 +15,7 @@
 }
 
 - (UIImage *)activityImage {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad)
         return [UIImage imageNamed:[self.activityType stringByAppendingString:@"-iPad"]];
     else
         return [UIImage imageNamed:self.activityType];

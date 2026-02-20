@@ -46,7 +46,6 @@
 - (void)dealloc {
     [self.webView stopLoading];
 
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 
     self.webView.navigationDelegate = nil;
     self.webView = nil;
@@ -95,7 +94,7 @@
     
 	[super viewWillAppear:animated];
 	
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [self.navigationController setToolbarHidden:NO animated:animated];
     }
 }
@@ -103,7 +102,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [self.navigationController setToolbarHidden:YES animated:animated];
     }
 }
@@ -111,7 +110,6 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
 
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 }
 
 #pragma mark - Getters
@@ -181,7 +179,7 @@
     UIBarButtonItem *fixedSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         CGFloat toolbarWidth = 250.0f;
         fixedSpace.width = 35.0f;
 
@@ -224,12 +222,10 @@
 #pragma mark - WKNavigationDelegate
 
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     [self updateToolbarItems];
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 
     NSString *jsCode = @"function MyIPhoneApp_ModifyWindowOpen() { window.open = function(url,target,param) { if (url && url.length > 0) { if (!target) target = '_blank'; if (target == '_blank') { location.href = 'newtab:'+escape(url); } else { location.href = url; } } } }";
 
@@ -245,12 +241,10 @@
 }
 
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     [self updateToolbarItems];
 }
 
 - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error {
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     [self updateToolbarItems];
 }
 
@@ -299,7 +293,6 @@
     NSString *fileExtension = [requestedURL pathExtension];
 
     if (navigationAction.navigationType == WKNavigationTypeLinkActivated) {
-        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
 
         if ([scheme isEqualToString:@"magnet"]) {
             NSString *magnet = [requestedURL absoluteString];

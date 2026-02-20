@@ -15,13 +15,13 @@
 - (void)torrentFetcher:(TorrentFetcher*)fetcher failedToFetchFromURL:(NSString*)url withError:(NSError*)error;
 
 @end
-    
-@interface TorrentFetcher : NSObject {
-    NSURLConnection *fURLConnection;
+
+@interface TorrentFetcher : NSObject <NSURLSessionDataDelegate> {
+    NSURLSessionDataTask *fDataTask;
     NSMutableData *fData;
     NSString *url;
 }
-@property (nonatomic, retain) NSURLConnection *URLConnection;
+@property (nonatomic, retain) NSURLSessionDataTask *URLConnection;
 @property (nonatomic, retain) NSString *url;
 @property (nonatomic, assign) id<TorrentFetcherDelegate> delegate;
 

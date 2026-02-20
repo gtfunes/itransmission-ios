@@ -48,7 +48,7 @@ static CFTimeInterval const kRotationDurationIPad = 0.4;
 
 static CGFloat const kForceHideAnimationDuration = 0.1f;
 
-#define AL_DEVICE_ANIMATION_DURATION UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? kRotationDurationIPad : kRotationDurationIphone;
+#define AL_DEVICE_ANIMATION_DURATION ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad ? kRotationDurationIPad : kRotationDurationIphone)
 
 //macros referenced from MBProgressHUD. cheers to @matej
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= 70000
@@ -96,15 +96,17 @@ static CGFloat const kForceHideAnimationDuration = 0.1f;
 @implementation UIApplication (ALApplicationBarHeights)
 
 + (CGFloat)navigationBarHeight {
-    //if we're on iOS7 or later, return new landscape navBar height
-    if (AL_IOS_7_OR_GREATER && UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) && [UIDevice currentDevice].userInterfaceIdiom != UIUserInterfaceIdiomPad)
+    UIWindowScene *scene = (UIWindowScene *)[UIApplication sharedApplication].connectedScenes.allObjects.firstObject;
+    if ([UIDevice currentDevice].userInterfaceIdiom != UIUserInterfaceIdiomPad &&
+        UIInterfaceOrientationIsLandscape(scene.interfaceOrientation)) {
         return kNavigationBarHeightiOS7Landscape;
-    
+    }
     return kNavigationBarHeightDefault;
 }
 
 + (CGFloat)statusBarHeight {
-	return [UIApplication sharedApplication].statusBarFrame.size.height;
+    UIWindowScene *scene = (UIWindowScene *)[UIApplication sharedApplication].connectedScenes.allObjects.firstObject;
+    return scene.statusBarManager.statusBarFrame.size.height;
 }
 
 @end
@@ -541,17 +543,13 @@ static CGFloat const kForceHideAnimationDuration = 0.1f;
         case ALAlertBannerPositionTop:
             initialYCoord = -heightForSelf;
             if (isSuperviewKindOfWindow) initialYCoord += [UIApplication statusBarHeight];
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-            if (AL_IOS_7_OR_GREATER) {
+            {
                 id nextResponder = [self nextAvailableViewController:self];
                 if (nextResponder) {
                     UIViewController *vc = nextResponder;
-                    if (!(vc.automaticallyAdjustsScrollViewInsets && [vc.view isKindOfClass:[UIScrollView class]])) {
-                        initialYCoord += [vc topLayoutGuide].length;
-                    }
+                    initialYCoord += vc.view.safeAreaInsets.top;
                 }
             }
-#endif
             break;
         case ALAlertBannerPositionBottom:
             initialYCoord = superview.bounds.size.height;
@@ -598,16 +596,15 @@ static CGFloat const kForceHideAnimationDuration = 0.1f;
     }
     
     if (animated) {
-        [UIView beginAnimations:nil context:NULL];
-        [UIView setAnimationDuration:boundsAnimationDuration];
-    }
-    
-    self.styleImageView.frame = CGRectMake(kMargin, (self.frame.size.height/2.f) - (self.styleImageView.image.size.height/2.f), self.styleImageView.image.size.width, self.styleImageView.image.size.height);
-    self.titleLabel.frame = CGRectMake(self.styleImageView.frame.origin.x + self.styleImageView.frame.size.width + kMargin, kMargin, maxLabelSize.width, titleLabelHeight);
-    self.subtitleLabel.frame = CGRectMake(self.titleLabel.frame.origin.x, self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + (self.titleLabel.text == nil ? 0.f : kMargin/2.f), maxLabelSize.width, subtitleLabelHeight);
-    
-    if (animated) {
-        [UIView commitAnimations];
+        [UIView animateWithDuration:boundsAnimationDuration animations:^{
+            self.styleImageView.frame = CGRectMake(kMargin, (self.frame.size.height/2.f) - (self.styleImageView.image.size.height/2.f), self.styleImageView.image.size.width, self.styleImageView.image.size.height);
+            self.titleLabel.frame = CGRectMake(self.styleImageView.frame.origin.x + self.styleImageView.frame.size.width + kMargin, kMargin, maxLabelSize.width, titleLabelHeight);
+            self.subtitleLabel.frame = CGRectMake(self.titleLabel.frame.origin.x, self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + (self.titleLabel.text == nil ? 0.f : kMargin/2.f), maxLabelSize.width, subtitleLabelHeight);
+        }];
+    } else {
+        self.styleImageView.frame = CGRectMake(kMargin, (self.frame.size.height/2.f) - (self.styleImageView.image.size.height/2.f), self.styleImageView.image.size.width, self.styleImageView.image.size.height);
+        self.titleLabel.frame = CGRectMake(self.styleImageView.frame.origin.x + self.styleImageView.frame.size.width + kMargin, kMargin, maxLabelSize.width, titleLabelHeight);
+        self.subtitleLabel.frame = CGRectMake(self.titleLabel.frame.origin.x, self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + (self.titleLabel.text == nil ? 0.f : kMargin/2.f), maxLabelSize.width, subtitleLabelHeight);
     }
     
     if (self.showShadow) {

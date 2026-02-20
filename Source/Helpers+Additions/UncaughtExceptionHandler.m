@@ -14,14 +14,14 @@
 
 #import "UncaughtExceptionHandler.h"
 #import <UserNotifications/UserNotifications.h>
-#include <libkern/OSAtomic.h>
+#include <stdatomic.h>
 #include <execinfo.h>
 
 NSString * const UncaughtExceptionHandlerSignalExceptionName = @"UncaughtExceptionHandlerSignalExceptionName";
 NSString * const UncaughtExceptionHandlerSignalKey = @"UncaughtExceptionHandlerSignalKey";
 NSString * const UncaughtExceptionHandlerAddressesKey = @"UncaughtExceptionHandlerAddressesKey";
 
-volatile int32_t UncaughtExceptionCount = 0;
+static _Atomic int32_t UncaughtExceptionCount = 0;
 const int32_t UncaughtExceptionMaximum = 10;
 
 const NSInteger UncaughtExceptionHandlerSkipAddressCount = 4;
@@ -77,7 +77,14 @@ const NSInteger UncaughtExceptionHandlerReportAddressCount = 5;
         }]];
 
         // Present on the key window's root view controller.
-        UIViewController *rootVC = [UIApplication sharedApplication].keyWindow.rootViewController;
+        UIWindow *keyWindow = nil;
+        for (UIScene *scene in [UIApplication sharedApplication].connectedScenes) {
+            if ([scene isKindOfClass:[UIWindowScene class]]) {
+                keyWindow = ((UIWindowScene *)scene).windows.firstObject;
+                break;
+            }
+        }
+        UIViewController *rootVC = keyWindow.rootViewController;
         [rootVC presentViewController:alert animated:YES completion:nil];
     } else {
         UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
@@ -130,7 +137,7 @@ const NSInteger UncaughtExceptionHandlerReportAddressCount = 5;
 
 void HandleException(NSException *exception)
 {
-	int32_t exceptionCount = OSAtomicIncrement32(&UncaughtExceptionCount);
+	int32_t exceptionCount = ++UncaughtExceptionCount;
 	if (exceptionCount > UncaughtExceptionMaximum)
 	{
 		return;
@@ -148,7 +155,7 @@ void HandleException(NSException *exception)
 
 void SignalHandler(int signal)
 {
-	int32_t exceptionCount = OSAtomicIncrement32(&UncaughtExceptionCount);
+	int32_t exceptionCount = ++UncaughtExceptionCount;
 	if (exceptionCount > UncaughtExceptionMaximum)
 	{
 		return;

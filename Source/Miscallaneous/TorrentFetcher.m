@@ -12,7 +12,7 @@
 
 @implementation TorrentFetcher
 
-@synthesize URLConnection = fURLConnection;
+@synthesize URLConnection = fDataTask;
 @synthesize url;
 @synthesize delegate = fDelegate;
 
@@ -20,16 +20,20 @@
 {
     NSURL *URL = [NSURL URLWithString:u];
     if (!URL) return nil;
-    
+
     self = [super init];
     if (self) {
-        NSURLRequest *urlRequest = [NSURLRequest requestWithURL:URL];
-        NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
-        [connection start];
         self.url = u;
-        self.URLConnection = connection;
         self.delegate = d;
         fData = [[NSMutableData alloc] init];
+
+        NSURLRequest *urlRequest = [NSURLRequest requestWithURL:URL];
+        NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]
+                                                              delegate:self
+                                                         delegateQueue:[NSOperationQueue mainQueue]];
+        fDataTask = [session dataTaskWithRequest:urlRequest];
+        self.URLConnection = fDataTask;
+        [fDataTask resume];
     }
     return self;
 }
@@ -41,36 +45,40 @@
     return YES;
 }
 
-- (BOOL)connectionShouldUseCredentialStorage:(NSURLConnection *)connection
-{
-    return YES;
-}
+#pragma mark - NSURLSessionDataDelegate
 
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
+didReceiveResponse:(NSURLResponse *)response
+ completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
 {
     if (![self validateLength:[response expectedContentLength]]) {
-        [self.URLConnection cancel];
-        self.URLConnection = nil;
-        NSError *error = [NSError errorWithDomain:@"TorrentFetcher" code:1 userInfo:[NSDictionary dictionaryWithObject:@"File too large" forKey:NSLocalizedDescriptionKey]];
+        [fDataTask cancel];
+        fDataTask = nil;
+        NSError *error = [NSError errorWithDomain:@"TorrentFetcher" code:1
+                                         userInfo:@{NSLocalizedDescriptionKey: @"File too large"}];
         [self.delegate torrentFetcher:self failedToFetchFromURL:self.url withError:error];
+        completionHandler(NSURLSessionResponseCancel);
+    } else {
+        completionHandler(NSURLSessionResponseAllow);
     }
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
+    didReceiveData:(NSData *)data
 {
     [fData appendData:data];
 }
 
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
+didCompleteWithError:(NSError *)error
 {
-    [self.delegate torrentFetcher:self failedToFetchFromURL:self.url withError:error];
-    fData = nil;
-}
-
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    [self.delegate torrentFetcher:self fetchedTorrentContent:fData fromURL:self.url];
-    fData = nil;
+    if (error) {
+        [self.delegate torrentFetcher:self failedToFetchFromURL:self.url withError:error];
+        fData = nil;
+    } else {
+        [self.delegate torrentFetcher:self fetchedTorrentContent:fData fromURL:self.url];
+        fData = nil;
+    }
 }
 
 @end

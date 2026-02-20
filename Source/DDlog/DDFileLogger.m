@@ -1520,7 +1520,7 @@ static int exception_count = 0;
  * want (even if device is locked). Thats why that attribute have to be changed to
  * NSFileProtectionCompleteUntilFirstUserAuthentication.
  */
-BOOL doesAppRunInBackground()
+BOOL doesAppRunInBackground(void)
 {
     BOOL answer = NO;
 

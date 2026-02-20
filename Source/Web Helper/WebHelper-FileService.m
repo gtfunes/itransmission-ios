@@ -153,7 +153,7 @@
             if ([[filereq substringToIndex:1] isEqualToString:@"/"])
                 filereq = [NSString stringWithFormat:@"%@%@", [self searchDirectoryPath], filereq];
 
-            filereq = [[[filereq stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByExpandingTildeInPath] stringByAppendingString:addStr];
+            filereq = [[[filereq stringByRemovingPercentEncoding] stringByExpandingTildeInPath] stringByAppendingString:addStr];
             /*if ([filereq isEqualToString:@"/delete/"]) {
                 NSError *error = nil; 
                 for (NSString *pathFile in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[self searchDirectoryPath] error:&error]) {

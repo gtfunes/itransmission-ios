@@ -1,13 +1,11 @@
 #import "DDASLLogger.h"
 
-#import <libkern/OSAtomic.h>
-
 /**
  * Welcome to Cocoa Lumberjack!
- * 
+ *
  * The project page has a wealth of documentation if you have any questions.
  * https://github.com/CocoaLumberjack/CocoaLumberjack
- * 
+ *
  * If you're new to the project you may wish to read the "Getting Started" wiki.
  * https://github.com/CocoaLumberjack/CocoaLumberjack/wiki/GettingStarted
 **/
@@ -35,7 +33,7 @@ static DDASLLogger *sharedInstance;
     if (!initialized)
     {
         initialized = YES;
-        
+
         sharedInstance = [[[self class] alloc] init];
     }
 }
@@ -51,13 +49,10 @@ static DDASLLogger *sharedInstance;
     {
         return nil;
     }
-    
+
     if ((self = [super init]))
     {
-        // A default asl client is provided for the main thread,
-        // but background threads need to create their own client.
-        
-        client = asl_open(NULL, "com.apple.console", 0);
+        _log = os_log_create("com.apple.console", "default");
     }
     return self;
 }
@@ -65,30 +60,27 @@ static DDASLLogger *sharedInstance;
 - (void)logMessage:(DDLogMessage *)logMessage
 {
     NSString *logMsg = logMessage->logMsg;
-    
+
     if (formatter)
     {
         logMsg = [formatter formatLogMessage:logMessage];
     }
-    
+
     if (logMsg)
     {
         const char *msg = [logMsg UTF8String];
-        
-        int aslLogLevel;
+
+        os_log_type_t logType;
         switch (logMessage->logFlag)
         {
-            // Note: By default ASL will filter anything above level 5 (Notice).
-            // So our mappings shouldn't go above that level.
-            
-            case LOG_FLAG_ERROR : aslLogLevel = ASL_LEVEL_ALERT;   break;
-            case LOG_FLAG_WARN  : aslLogLevel = ASL_LEVEL_CRIT;    break;
-            case LOG_FLAG_INFO  : aslLogLevel = ASL_LEVEL_ERR;     break;
-            case LOG_FLAG_DEBUG : aslLogLevel = ASL_LEVEL_WARNING; break;
-            default             : aslLogLevel = ASL_LEVEL_NOTICE;  break;
+            case LOG_FLAG_ERROR : logType = OS_LOG_TYPE_FAULT;   break;
+            case LOG_FLAG_WARN  : logType = OS_LOG_TYPE_ERROR;   break;
+            case LOG_FLAG_INFO  : logType = OS_LOG_TYPE_INFO;    break;
+            case LOG_FLAG_DEBUG : logType = OS_LOG_TYPE_DEBUG;   break;
+            default             : logType = OS_LOG_TYPE_DEFAULT; break;
         }
-        
-        asl_log(client, NULL, aslLogLevel, "%s", msg);
+
+        os_log_with_type(_log, logType, "%{public}s", msg);
     }
 }
 

@@ -42,11 +42,9 @@
 	if (keyboardIsShowing)
 		frame.size.height -= keyboardBounds.size.height;
     
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationBeginsFromCurrentState:YES];
-	[UIView setAnimationDuration:0.3f];
-	self.tableView.frame = frame;
-	[UIView commitAnimations];
+	[UIView animateWithDuration:0.3f animations:^{
+        self.tableView.frame = frame;
+    }];
 }
 
 - (void)keyboardDoneButton:(id)sender

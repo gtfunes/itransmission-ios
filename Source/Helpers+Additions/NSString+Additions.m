@@ -139,7 +139,7 @@
         if (years == 1)
             [timeArray addObject: LocalizedString(@"1 year")];
         else
-            [timeArray addObject: [NSString stringWithFormat: LocalizedString(@"%u years"), years]];
+            [timeArray addObject: [NSString stringWithFormat: LocalizedString(@"%llu years"), years]];
         remaining %= 31557600;
         --max;
     }
@@ -149,24 +149,24 @@
         if (days == 1)
             [timeArray addObject: LocalizedString(@"1 day")];
         else
-            [timeArray addObject: [NSString stringWithFormat: LocalizedString(@"%u days"), days]];
+            [timeArray addObject: [NSString stringWithFormat: LocalizedString(@"%llu days"), days]];
         remaining %= (24 * 60 * 60);
         --max;
     }
     if (max > 0 && seconds >= (60 * 60))
     {
-        [timeArray addObject: [NSString stringWithFormat: LocalizedString(@"%u hr"), remaining / (60 * 60)]];
+        [timeArray addObject: [NSString stringWithFormat: LocalizedString(@"%llu hr"), remaining / (60 * 60)]];
         remaining %= (60 * 60);
         --max;
     }
     if (max > 0 && (!showSeconds || seconds >= 60))
     {
-        [timeArray addObject: [NSString stringWithFormat: LocalizedString(@"%u min"), remaining / 60]];
+        [timeArray addObject: [NSString stringWithFormat: LocalizedString(@"%llu min"), remaining / 60]];
         remaining %= 60;
         --max;
     }
     if (max > 0 && showSeconds)
-        [timeArray addObject: [NSString stringWithFormat: LocalizedString(@"%u sec"), remaining]];
+        [timeArray addObject: [NSString stringWithFormat: LocalizedString(@"%llu sec"), remaining]];
     
     return [timeArray componentsJoinedByString: @" "];
 }

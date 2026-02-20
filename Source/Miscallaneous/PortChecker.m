@@ -42,19 +42,18 @@
 {
     if ((self = [super init]))
     {
-
         fPortNumber = portNumber;
-        
+
         fDelegate = delegate;
-        
+
         fStatus = PORT_STATUS_CHECKING;
-        
+
         fTimer = [NSTimer scheduledTimerWithTimeInterval: CHECK_FIRE target: self selector: @selector(startProbe:)
                     userInfo: [NSNumber numberWithInteger: portNumber] repeats: NO];
         if (!delay)
             [fTimer fire];
     }
-    
+
     return self;
 }
 
@@ -72,31 +71,38 @@
 {
     [fTimer invalidate];
     fTimer = nil;
-    
+
     [fConnection cancel];
 }
 
-- (void) connection: (NSURLConnection *) connection didReceiveResponse: (NSURLResponse *) response
+#pragma mark - NSURLSessionDataDelegate
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
+didReceiveResponse:(NSURLResponse *)response
+ completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
 {
     [fPortProbeData setLength: 0];
+    completionHandler(NSURLSessionResponseAllow);
 }
 
-- (void) connection: (NSURLConnection *) connection didReceiveData: (NSData *) data
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
+    didReceiveData:(NSData *)data
 {
     [fPortProbeData appendData: data];
 }
 
-- (void) connection: (NSURLConnection *) connection didFailWithError: (NSError *) error
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
+didCompleteWithError:(NSError *)error
 {
-    DDLogDebug(@"Unable to get port status: connection failed (%@)", [error localizedDescription]);
-    [self callBackWithStatus: PORT_STATUS_ERROR];
-}
+    if (error) {
+        DDLogDebug(@"Unable to get port status: connection failed (%@)", [error localizedDescription]);
+        [self callBackWithStatus: PORT_STATUS_ERROR];
+        return;
+    }
 
-- (void) connectionDidFinishLoading: (NSURLConnection *) connection
-{
-    NSString * probeString = [[NSString alloc] initWithData: fPortProbeData encoding: NSUTF8StringEncoding];
+    NSString *probeString = [[NSString alloc] initWithData: fPortProbeData encoding: NSUTF8StringEncoding];
     fPortProbeData = nil;
-    
+
     if (probeString)
     {
         if ([probeString isEqualToString: @"1"])
@@ -123,15 +129,20 @@
 - (void) startProbe: (NSTimer *) timer
 {
     fTimer = nil;
-    
-    NSURLRequest * portProbeRequest = [NSURLRequest requestWithURL: [NSURL URLWithString: CHECKER_URL([[timer userInfo] intValue])]
-                                                       cachePolicy: NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                                                   timeoutInterval: 15.0];
-    
-    if ((fConnection = [[NSURLConnection alloc] initWithRequest: portProbeRequest delegate: self]))
-        fPortProbeData = [[NSMutableData alloc] init];
-    else
-    {
+
+    NSURLRequest *portProbeRequest = [NSURLRequest requestWithURL: [NSURL URLWithString: CHECKER_URL([[timer userInfo] intValue])]
+                                                      cachePolicy: NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                                                  timeoutInterval: 15.0];
+
+    fPortProbeData = [[NSMutableData alloc] init];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]
+                                                          delegate:self
+                                                     delegateQueue:[NSOperationQueue mainQueue]];
+    fConnection = [session dataTaskWithRequest:portProbeRequest];
+    if (fConnection) {
+        [fConnection resume];
+    } else {
+        fPortProbeData = nil;
         DDLogDebug(@"Unable to get port status: failed to initiate connection");
         [self callBackWithStatus: PORT_STATUS_ERROR];
     }
@@ -140,7 +151,7 @@
 - (void) callBackWithStatus: (port_status_t) status
 {
     fStatus = status;
-    
+
     if (fDelegate && [fDelegate respondsToSelector: @selector(portCheckerDidFinishProbing:)])
         [fDelegate performSelectorOnMainThread: @selector(portCheckerDidFinishProbing:) withObject: self waitUntilDone: NO];
 }

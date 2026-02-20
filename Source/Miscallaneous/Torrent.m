@@ -521,7 +521,14 @@ int trashDataFile(const char * filename)
             preferredStyle:UIAlertControllerStyleAlert];
         [alert addAction:[UIAlertAction actionWithTitle:LocalizedString(@"Dismiss")
                                                   style:UIAlertActionStyleCancel handler:nil]];
-        UIViewController *rootVC = [UIApplication sharedApplication].keyWindow.rootViewController;
+        UIWindow *keyWindow = nil;
+        for (UIScene *scene in [UIApplication sharedApplication].connectedScenes) {
+            if ([scene isKindOfClass:[UIWindowScene class]]) {
+                keyWindow = ((UIWindowScene *)scene).windows.firstObject;
+                break;
+            }
+        }
+        UIViewController *rootVC = keyWindow.rootViewController;
         [rootVC presentViewController:alert animated:YES completion:nil];
 
         return;
@@ -1031,9 +1038,9 @@ int trashDataFile(const char * filename)
                 
             case TR_STATUS_DOWNLOAD:
                 if ([self totalPeersConnected] != 1)
-                    string = [NSString stringWithFormat: LocalizedString(@"Downloading from %d of %d peers"), [self peersSendingToUs], [self totalPeersConnected]];
+                    string = [NSString stringWithFormat: LocalizedString(@"Downloading from %ld of %ld peers"), (long)[self peersSendingToUs], (long)[self totalPeersConnected]];
                 else
-                    string = [NSString stringWithFormat: LocalizedString(@"Downloading from %d of 1 peer"), [self peersSendingToUs]];
+                    string = [NSString stringWithFormat: LocalizedString(@"Downloading from %ld of 1 peer"), (long)[self peersSendingToUs]];
                 
                 const NSInteger webSeedCount = fStat->webseedsSendingToUs;
 
@@ -1043,8 +1050,8 @@ int trashDataFile(const char * filename)
                     if (webSeedCount == 1)
                         webSeedString = LocalizedString(@"web seed");
                     else
-                        webSeedString = [NSString stringWithFormat: LocalizedString(@"%d web seeds"),
-                                         webSeedCount];
+                        webSeedString = [NSString stringWithFormat: LocalizedString(@"%ld web seeds"),
+                                         (long)webSeedCount];
                     
                     string = [string stringByAppendingFormat: @" + %@", webSeedString];
                 }
@@ -1053,11 +1060,11 @@ int trashDataFile(const char * filename)
                 
             case TR_STATUS_SEED:
                 if ([self totalPeersConnected] != 1)
-                    string = [NSString stringWithFormat: LocalizedString(@"Seeding to %d of %d peers"),
-                              [self peersGettingFromUs], [self totalPeersConnected]];
+                    string = [NSString stringWithFormat: LocalizedString(@"Seeding to %ld of %ld peers"),
+                              (long)[self peersGettingFromUs], (long)[self totalPeersConnected]];
                 else
-                    string = [NSString stringWithFormat: LocalizedString(@"Seeding to %d of 1 peer"),
-                              [self peersGettingFromUs]];
+                    string = [NSString stringWithFormat: LocalizedString(@"Seeding to %ld of 1 peer"),
+                              (long)[self peersGettingFromUs]];
 
                 break;
         }

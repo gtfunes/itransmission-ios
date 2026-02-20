@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import <asl.h>
+#import <os/log.h>
 
 #import "DDLog.h"
 
@@ -28,7 +28,7 @@
 
 @interface DDASLLogger : DDAbstractLogger <DDLogger>
 {
-    aslclient client;
+    os_log_t _log;
 }
 
 + (instancetype)sharedInstance;

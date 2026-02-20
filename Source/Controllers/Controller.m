@@ -29,7 +29,7 @@ static void printMessage(int level, const char * name, const char * message, con
         DDLogCVerbose(@"[%s] %s %s (%s:%d)", timestr, name, message, file, line );
 }
 
-static void pumpLogMessages()
+static void pumpLogMessages(void)
 {
     const tr_log_message * l;
     tr_log_message * list = tr_logGetQueue( );
@@ -115,7 +115,7 @@ static tr_rpc_callback_status rpcCallback(tr_session *handle, tr_rpc_callback_ty
     pumpLogMessages();
 }
 
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
     if ([[url scheme] isEqualToString:@"magnet"]) {
         [self addTorrentFromMagnet:[url absoluteString]];

@@ -8,6 +8,10 @@
 
 #import "ClipboardLabel.h"
 
+@interface ClipboardLabel () <UIEditMenuInteractionDelegate>
+@property (nonatomic, strong) UIEditMenuInteraction *editMenuInteraction;
+@end
+
 @implementation ClipboardLabel
 @synthesize shouldPopUpControlMenu;
 
@@ -17,6 +21,10 @@
 		shouldPopUpControlMenu = YES;
 		UILongPressGestureRecognizer *gr = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
 		[self addGestureRecognizer:gr];
+
+        UIEditMenuInteraction *editInteraction = [[UIEditMenuInteraction alloc] initWithDelegate:self];
+        [self addInteraction:editInteraction];
+        self.editMenuInteraction = editInteraction;
 	}
 	return self;
 }
@@ -50,15 +58,33 @@
 
 - (void)showMenuFromLocation:(CGPoint)location
 {
-	UIMenuController *menuController = [UIMenuController sharedMenuController];
-	
-	if ([self becomeFirstResponder]) {
-		[menuController setTargetRect:CGRectMake(location.x, location.y, 0.0f, 0.0f) inView:self];
-		[menuController setMenuVisible:YES animated:YES];
-	}
+    if ([self becomeFirstResponder]) {
+        UIEditMenuConfiguration *config = [UIEditMenuConfiguration
+            configurationWithIdentifier:nil
+                            sourcePoint:location];
+        [self.editMenuInteraction presentEditMenuWithConfiguration:config];
+    }
 }
 
-- (void)longPress:(UILongPressGestureRecognizer *) gestureRecognizer {
+#pragma mark - UIEditMenuInteractionDelegate
+
+- (UIMenu *)editMenuInteraction:(UIEditMenuInteraction *)interaction
+                        menuFor:(UIEditMenuConfiguration *)configuration
+               suggestedActions:(NSArray<UIMenuElement *> *)suggestedActions
+{
+    // Return only the Copy action
+    UIAction *copyAction = [UIAction actionWithTitle:@"Copy"
+                                              image:nil
+                                         identifier:nil
+                                            handler:^(__kindof UIAction *action) {
+        [self copy:nil];
+    }];
+    return [UIMenu menuWithChildren:@[copyAction]];
+}
+
+#pragma mark - Gesture Recognizer
+
+- (void)longPress:(UILongPressGestureRecognizer *)gestureRecognizer {
     if ([gestureRecognizer state] == UIGestureRecognizerStateBegan) {
 		CGPoint location = [gestureRecognizer locationInView:[gestureRecognizer view]];
 		[self showMenuFromLocation:location];

@@ -20,8 +20,8 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 #import "NSObject+performBlock.h"
 
 #define LocalizedString(key) [[NSBundle mainBundle] localizedStringForKey:(key) value:@"" table:nil]
-#define isInterfacePad                                  (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-#define isInterfacePhone                                (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+#define isInterfacePad                                  ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad)
+#define isInterfacePhone                                ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone)
 #define isInterfacePhone4                               (isInterfacePhone && [[UIScreen mainScreen] bounds].size.height <= 480.0f)
 #define isInterfacePhone5                               (isInterfacePhone && [[UIScreen mainScreen] bounds].size.height > 480.0f)
 

@@ -28,7 +28,7 @@
                                                                                     target:self.webViewController
                                                                                     action:@selector(doneButtonClicked:)];
         
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad)
             self.webViewController.navigationItem.leftBarButtonItem = doneButton;
         else
             self.webViewController.navigationItem.rightBarButtonItem = doneButton;
