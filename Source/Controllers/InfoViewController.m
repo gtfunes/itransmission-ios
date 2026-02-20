@@ -96,18 +96,21 @@
     }
 
     [self.activityIndicator stopAnimating];
+    self.navigationItem.rightBarButtonItem = nil;
 }
 
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error
 {
     DDLogDebug(@"%@", [error description]);
     [self.activityIndicator stopAnimating];
+    self.navigationItem.rightBarButtonItem = nil;
 }
 
 - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error
 {
     DDLogDebug(@"%@", [error description]);
     [self.activityIndicator stopAnimating];
+    self.navigationItem.rightBarButtonItem = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated
