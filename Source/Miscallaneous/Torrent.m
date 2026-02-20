@@ -235,6 +235,10 @@ int trashDataFile(const char * filename)
     tr_torrentSetMetadataCallback(fHandle, NULL, NULL);
 
     tr_torrentRemove(fHandle, trashFiles, trashDataFile);
+    // NULL out the handle so any subsequent call to update/stopTransfer/etc.
+    // on this (now-dead) Torrent object safely returns early instead of
+    // dereferencing a freed tr_torrent struct → EXC_BAD_ACCESS.
+    fHandle = NULL;
 }
 
 - (void) changeDownloadFolderBeforeUsing: (NSString *) folder
@@ -275,6 +279,10 @@ int trashDataFile(const char * filename)
 
 - (void) update
 {
+    // Guard against a dangling fHandle left by closeRemoveTorrent: after
+    // tr_torrentRemove frees the underlying tr_torrent struct.
+    if (!fHandle) return;
+
     //get previous status values before update
     BOOL wasChecking = NO, wasError = NO, wasStalled = NO;
     if (fStat != NULL)
@@ -297,8 +305,10 @@ int trashDataFile(const char * filename)
 
 - (void) startTransfer
 {
+    if (!fHandle) return;
+
     fWaitToStart = NO;
-    
+
     if ([self.controller isStartingTransferAllowed]) {
         if (![self isActive] && [self alertForRemainingDiskSpace])
         {
@@ -314,8 +324,10 @@ int trashDataFile(const char * filename)
 
 - (void) stopTransfer
 {
+    if (!fHandle) return;
+
     fWaitToStart = NO;
-    
+
     if ([self isActive])
     {
         tr_torrentStop(fHandle);
