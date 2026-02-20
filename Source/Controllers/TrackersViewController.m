@@ -130,6 +130,8 @@
         [fTorrent removeTrackers:[NSSet setWithObject: [[cell TrackerURL] text]]];
     }
 
+    [SelectedItems removeAllObjects];
+
     [self reloadTrackers];
 
     [self.tableView reloadData];
@@ -188,8 +190,6 @@
 
         [SelectedItems addObject:cell];
     }
-
-    [self reloadTrackers];
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -224,11 +224,16 @@
 
 - (void)updateCell:(TrackerCell *)cell {
     if (cell == nil) {
-        cell = [TrackerCell cellFromNib];
+        return;
     }
-    
+
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    
+
+    // Cell may no longer be in the table (e.g. deleted while the delayed call was pending)
+    if (!indexPath || indexPath.row >= (NSInteger)[Trackers count]) {
+        return;
+    }
+
     TrackerNode *node = [Trackers objectAtIndex:indexPath.row];
     
     cell.TrackerURL.text = node.fullAnnounceAddress;
