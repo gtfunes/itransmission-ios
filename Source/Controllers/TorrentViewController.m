@@ -128,7 +128,14 @@
         cell = [TorrentCell cellFromNib];
 		[cell.controlButton addTarget:self action:@selector(controlButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
 	}
-    
+
+    // XIB sets selectionStyle=none; restore Default during editing so the
+    // multi-select checkmark circle appears, suppress it otherwise so normal
+    // taps don't flash a selection highlight before pushing DetailViewController.
+    cell.selectionStyle = self.tableView.editing
+        ? UITableViewCellSelectionStyleDefault
+        : UITableViewCellSelectionStyleNone;
+
     Torrent *t = [self.controller torrentAtIndex:index];
     [self setupCell:cell forTorrent:t];
 
@@ -424,6 +431,11 @@
 	[self.navigationItem setLeftBarButtonItem:self.doneButton animated:YES];
 	[self setToolbarItems:self.editToolbarItems animated:YES];
 	self.selectedIndexPaths = [NSMutableArray array];
+
+    // Enable selection highlight on visible cells so the checkmark circle appears
+    for (UITableViewCell *cell in self.tableView.visibleCells) {
+        cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+    }
 }
 
 - (void)doneButtonClicked:(id)sender
@@ -431,11 +443,16 @@
 	[self.tableView setEditing:NO animated:YES];
 	[self.navigationItem setLeftBarButtonItem:self.editButton animated:YES];
 	[self setToolbarItems:self.normalToolbarItems animated:YES];
-	
+
 	for (NSIndexPath *indexPath in self.selectedIndexPaths) {
 		[self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 	}
 	self.selectedIndexPaths = nil;
+
+    // Suppress selection highlight again so normal taps don't flash
+    for (UITableViewCell *cell in self.tableView.visibleCells) {
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
 }
 
 - (void)updateUI
