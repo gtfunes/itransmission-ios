@@ -66,13 +66,13 @@
 		</array>
 	</dict>
 	<key>LSMinimumSystemVersion</key>
-	<string>3.2</string>
-	<key>LSRequiresIPhoneOS</key>
-	<false/>
+	<string>16.0</string>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<false/>
 	<key>NSMainNibFile</key>
 	<string>MainWindow</string>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
 	<key>UIApplicationExitsOnSuspend</key>
 	<false/>
 	<key>UIBackgroundModes</key>
