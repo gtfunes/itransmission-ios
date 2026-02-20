@@ -64,7 +64,7 @@ Transmission.prototype =
 		$('#compact-button').click($.proxy(this.toggleCompactClicked,this));
 
 		// tell jQuery to copy the dataTransfer property from events over if it exists
-		jQuery.event.props.push("dataTransfer");
+		jQuery.event.addProp("dataTransfer");
 
 		$('#torrent_upload_form').submit(function() { $('#upload_confirm_button').click(); return false; });
 
