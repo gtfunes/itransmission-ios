@@ -51,20 +51,6 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>37</string>
-	<key>Fabric</key>
-	<dict>
-		<key>APIKey</key>
-		<string>54ec503ea22db71aaba6db79d434ff32bbd5470c</string>
-		<key>Kits</key>
-		<array>
-			<dict>
-				<key>KitInfo</key>
-				<dict/>
-				<key>KitName</key>
-				<string>Crashlytics</string>
-			</dict>
-		</array>
-	</dict>
 	<key>LSMinimumSystemVersion</key>
 	<string>16.0</string>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
