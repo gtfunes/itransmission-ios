@@ -74,9 +74,11 @@ static tr_rpc_callback_status rpcCallback(tr_session *handle, tr_rpc_callback_ty
     self.navController = [[UINavigationController alloc] initWithRootViewController:self.torrentViewController];
     self.navController.toolbarHidden = NO;
 
+#ifdef DEBUG
     [DDLog addLogger:[DDASLLogger sharedInstance]];
     [DDLog addLogger:[DDTTYLogger sharedInstance]];
-    
+#endif
+
     if ([fDefaults objectForKey:@"LoggingEnabled"]) {
         [self startLogging];
         [self pumpLogMessages];
