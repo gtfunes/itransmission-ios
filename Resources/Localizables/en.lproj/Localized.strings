@@ -193,10 +193,43 @@
 
 
 /*
+ * ./Source/Controllers/PeersViewController.m
+ */
+
+"Peers" = "Peers";
+
+"No Peers" = "No Peers";
+
+"Peers will appear as the torrent connects" = "Peers will appear as the torrent connects";
+
+
+/*
+ * ./Source/Controllers/TrackersViewController.m (empty state)
+ */
+
+"No Trackers" = "No Trackers";
+
+"Add a tracker URL using the + button" = "Add a tracker URL using the + button";
+
+
+/*
+ * ./Source/Controllers/FileListViewController.m
+ */
+
+"No Files" = "No Files";
+
+"File information is not yet available" = "File information is not yet available";
+
+
+/*
  * ./Source/Controllers/TorrentViewController.m
  */
 
 "Transfers" = "Transfers";
+
+"No Torrents" = "No Torrents";
+
+"Tap + to add a torrent" = "Tap + to add a torrent";
 
 "Are you sure to remove %@ torrent?" = "Are you sure to remove %@ torrent?";
 
