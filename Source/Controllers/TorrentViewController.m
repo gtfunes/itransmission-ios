@@ -625,6 +625,7 @@
         weakSelf.selectedIndexPaths = [NSMutableArray array];
 
         [weakSelf performBlockOnMainQueue:^{
+            [weakSelf doneButtonClicked:nil];   // exit edit mode, restore nav/toolbar
             [weakSelf.tableView reloadData];
             weakSelf.UIUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:weakSelf selector:@selector(updateUI) userInfo:nil repeats:YES];
             [weakSelf updateUI];
