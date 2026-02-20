@@ -371,9 +371,11 @@
 		[torrent startTransfer];
 	}
 
-	[self.tableView reloadData];
-
-	self.selectedIndexPaths = nil;	
+    // Clear selection before doneButtonClicked: so its deselect loop is a no-op,
+    // then exit editing mode and reload so cells reflect the new transfer state.
+    self.selectedIndexPaths = nil;
+    [self doneButtonClicked:nil];
+    [self.tableView reloadData];
 }
 
 - (void)pauseButtonClicked:(id)sender
@@ -383,9 +385,11 @@
 		[torrent stopTransfer];
 	}
 
-	[self.tableView reloadData];
-
-	self.selectedIndexPaths = nil;
+    // Clear selection before doneButtonClicked: so its deselect loop is a no-op,
+    // then exit editing mode and reload so cells reflect the new transfer state.
+    self.selectedIndexPaths = nil;
+    [self doneButtonClicked:nil];
+    [self.tableView reloadData];
 }
 
 - (void)removeButtonClicked:(id)sender
