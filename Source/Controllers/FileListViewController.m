@@ -33,8 +33,48 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     [self.torrent updateFileStat];
+
+    // Empty state background view (frame-managed by UITableView; inner stack uses Auto Layout)
+    UIView *emptyView = [[UIView alloc] init];
+
+    UIImageView *iconView = [[UIImageView alloc] initWithImage:[UIImage systemImageNamed:@"doc"]];
+    iconView.tintColor = [UIColor systemGrayColor];
+    iconView.contentMode = UIViewContentModeScaleAspectFit;
+    [NSLayoutConstraint activateConstraints:@[
+        [iconView.widthAnchor constraintEqualToConstant:80.0f],
+        [iconView.heightAnchor constraintEqualToConstant:80.0f],
+    ]];
+
+    UILabel *titleLabel = [[UILabel alloc] init];
+    titleLabel.text = LocalizedString(@"No Files");
+    titleLabel.font = [UIFont boldSystemFontOfSize:20.0f];
+    titleLabel.textColor = [UIColor labelColor];
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+
+    UILabel *subtitleLabel = [[UILabel alloc] init];
+    subtitleLabel.text = LocalizedString(@"File information is not yet available");
+    subtitleLabel.font = [UIFont systemFontOfSize:15.0f];
+    subtitleLabel.textColor = [UIColor secondaryLabelColor];
+    subtitleLabel.textAlignment = NSTextAlignmentCenter;
+    subtitleLabel.numberOfLines = 0;
+
+    UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[iconView, titleLabel, subtitleLabel]];
+    stack.axis = UILayoutConstraintAxisVertical;
+    stack.alignment = UIStackViewAlignmentCenter;
+    stack.spacing = 12.0f;
+    stack.translatesAutoresizingMaskIntoConstraints = NO;
+
+    [emptyView addSubview:stack];
+    [NSLayoutConstraint activateConstraints:@[
+        [stack.centerXAnchor constraintEqualToAnchor:emptyView.centerXAnchor],
+        [stack.centerYAnchor constraintEqualToAnchor:emptyView.centerYAnchor],
+        [stack.widthAnchor constraintLessThanOrEqualToAnchor:emptyView.widthAnchor constant:-40.0f],
+    ]];
+
+    self.tableView.backgroundView = emptyView;
+    [self updateEmptyState];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -147,15 +187,24 @@
     }
 }
 
+- (void)updateEmptyState {
+    BOOL isEmpty = ([[self.torrent flatFileList] count] == 0);
+    self.tableView.backgroundView.hidden = !isEmpty;
+    self.tableView.separatorStyle = isEmpty ? UITableViewCellSeparatorStyleNone
+                                            : UITableViewCellSeparatorStyleSingleLine;
+}
+
 - (void)updateUI
 {
     [super updateUI];
-    
+
     [self.torrent updateFileStat];
-        
+
     for (FileListCell *cell in [self.tableView visibleCells]) {
         [self performSelector:@selector(updateCell:) withObject:cell afterDelay:0.0f];
     }
+
+    [self updateEmptyState];
 }
 
 - (void)checkbox:(id)checkbox hasChangedState:(BOOL)checked
