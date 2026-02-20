@@ -172,7 +172,7 @@
     if (tableView.editing == NO) {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
-        if (!isInterfacePad) {
+        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
             UIAlertController *infoAlert = [UIAlertController alertControllerWithTitle:@""
                                                                                message:cell.TrackerLastAnnounceTime.text
                                                                         preferredStyle:UIAlertControllerStyleAlert];
