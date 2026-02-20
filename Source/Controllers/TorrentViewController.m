@@ -308,6 +308,9 @@
     // Fix XIB-baked gray background with the adaptive system background color
     self.tableView.backgroundColor = [UIColor systemBackgroundColor];
 
+    // Allow rows to be selected (checked) during editing so batch actions work
+    self.tableView.allowsMultipleSelectionDuringEditing = YES;
+
     // Empty state view: shown when there are no torrents.
     // backgroundView is frame-managed by UITableView, so emptyView must use
     // autoresizing (not translatesAutoresizingMaskIntoConstraints = NO).
