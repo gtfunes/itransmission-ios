@@ -289,15 +289,72 @@
 
     self.activityItemView.backgroundColor = [UIColor clearColor];
     self.activityItem = [[UIBarButtonItem alloc] initWithCustomView:self.activityItemView];
-		
+
 	UIButton *_infoButton = [UIButton buttonWithType:UIButtonTypeInfoLight];
 	[_infoButton addTarget:self action:@selector(infoButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
 	self.infoButton = [[UIBarButtonItem alloc] initWithCustomView:_infoButton];
 	self.navigationItem.rightBarButtonItem = self.infoButton;
-	
+
 	self.doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonClicked:)];
-	
+
+    // Initialize editButton so doneButtonClicked: can restore it to the left nav bar
+    self.editButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit
+                                                                   target:self
+                                                                   action:@selector(editButtonClicked:)];
+    self.navigationItem.leftBarButtonItem = self.editButton;
+
     [self.activityCounterBadge setBadgeColor:[UIColor colorWithRed:0.82 green:0.0 blue:0.082 alpha:1.000]];
+
+    // Fix XIB-baked gray background with the adaptive system background color
+    self.tableView.backgroundColor = [UIColor systemBackgroundColor];
+
+    // Empty state view: shown when there are no torrents
+    UIView *emptyView = [[UIView alloc] init];
+    emptyView.translatesAutoresizingMaskIntoConstraints = NO;
+
+    UIImageView *iconView = [[UIImageView alloc] initWithImage:[UIImage systemImageNamed:@"arrow.down.circle"]];
+    iconView.translatesAutoresizingMaskIntoConstraints = NO;
+    iconView.tintColor = [UIColor systemGrayColor];
+    iconView.contentMode = UIViewContentModeScaleAspectFit;
+
+    UILabel *titleLabel = [[UILabel alloc] init];
+    titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    titleLabel.text = LocalizedString(@"No Torrents");
+    titleLabel.font = [UIFont boldSystemFontOfSize:20.0f];
+    titleLabel.textColor = [UIColor labelColor];
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+
+    UILabel *subtitleLabel = [[UILabel alloc] init];
+    subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    subtitleLabel.text = LocalizedString(@"Tap + to add a torrent");
+    subtitleLabel.font = [UIFont systemFontOfSize:15.0f];
+    subtitleLabel.textColor = [UIColor secondaryLabelColor];
+    subtitleLabel.textAlignment = NSTextAlignmentCenter;
+    subtitleLabel.numberOfLines = 0;
+
+    [emptyView addSubview:iconView];
+    [emptyView addSubview:titleLabel];
+    [emptyView addSubview:subtitleLabel];
+
+    [NSLayoutConstraint activateConstraints:@[
+        [iconView.widthAnchor constraintEqualToConstant:80.0f],
+        [iconView.heightAnchor constraintEqualToConstant:80.0f],
+        [iconView.centerXAnchor constraintEqualToAnchor:emptyView.centerXAnchor],
+        [iconView.centerYAnchor constraintEqualToAnchor:emptyView.centerYAnchor constant:-50.0f],
+
+        [titleLabel.topAnchor constraintEqualToAnchor:iconView.bottomAnchor constant:16.0f],
+        [titleLabel.leadingAnchor constraintEqualToAnchor:emptyView.leadingAnchor constant:20.0f],
+        [titleLabel.trailingAnchor constraintEqualToAnchor:emptyView.trailingAnchor constant:-20.0f],
+
+        [subtitleLabel.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor constant:8.0f],
+        [subtitleLabel.leadingAnchor constraintEqualToAnchor:emptyView.leadingAnchor constant:20.0f],
+        [subtitleLabel.trailingAnchor constraintEqualToAnchor:emptyView.trailingAnchor constant:-20.0f],
+    ]];
+
+    self.tableView.backgroundView = emptyView;
+    BOOL isEmpty = ([self.controller torrentsCount] == 0);
+    self.tableView.backgroundView.hidden = !isEmpty;
+    self.tableView.separatorStyle = isEmpty ? UITableViewCellSeparatorStyleNone : UITableViewCellSeparatorStyleSingleLine;
 }
 
 - (void)resumeButtonClicked:(id)sender
@@ -385,8 +442,13 @@
 {
     [super updateUI];
 
+    // Update empty state visibility whenever the torrent list may have changed
+    BOOL isEmpty = ([self.controller torrentsCount] == 0);
+    self.tableView.backgroundView.hidden = !isEmpty;
+    self.tableView.separatorStyle = isEmpty ? UITableViewCellSeparatorStyleNone : UITableViewCellSeparatorStyleSingleLine;
+
 	NSArray *visibleCells = [self.tableView visibleCells];
-	
+
 	for (TorrentCell *cell in visibleCells) {
 		[self performSelector:@selector(updateCell:) withObject:cell afterDelay:0.0f];
 	}
