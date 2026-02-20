@@ -308,47 +308,44 @@
     // Fix XIB-baked gray background with the adaptive system background color
     self.tableView.backgroundColor = [UIColor systemBackgroundColor];
 
-    // Empty state view: shown when there are no torrents
+    // Empty state view: shown when there are no torrents.
+    // backgroundView is frame-managed by UITableView, so emptyView must use
+    // autoresizing (not translatesAutoresizingMaskIntoConstraints = NO).
+    // A centered UIStackView anchored inside emptyView handles the inner layout.
     UIView *emptyView = [[UIView alloc] init];
-    emptyView.translatesAutoresizingMaskIntoConstraints = NO;
 
     UIImageView *iconView = [[UIImageView alloc] initWithImage:[UIImage systemImageNamed:@"arrow.down.circle"]];
-    iconView.translatesAutoresizingMaskIntoConstraints = NO;
     iconView.tintColor = [UIColor systemGrayColor];
     iconView.contentMode = UIViewContentModeScaleAspectFit;
+    [NSLayoutConstraint activateConstraints:@[
+        [iconView.widthAnchor constraintEqualToConstant:80.0f],
+        [iconView.heightAnchor constraintEqualToConstant:80.0f],
+    ]];
 
     UILabel *titleLabel = [[UILabel alloc] init];
-    titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     titleLabel.text = LocalizedString(@"No Torrents");
     titleLabel.font = [UIFont boldSystemFontOfSize:20.0f];
     titleLabel.textColor = [UIColor labelColor];
     titleLabel.textAlignment = NSTextAlignmentCenter;
 
     UILabel *subtitleLabel = [[UILabel alloc] init];
-    subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     subtitleLabel.text = LocalizedString(@"Tap + to add a torrent");
     subtitleLabel.font = [UIFont systemFontOfSize:15.0f];
     subtitleLabel.textColor = [UIColor secondaryLabelColor];
     subtitleLabel.textAlignment = NSTextAlignmentCenter;
     subtitleLabel.numberOfLines = 0;
 
-    [emptyView addSubview:iconView];
-    [emptyView addSubview:titleLabel];
-    [emptyView addSubview:subtitleLabel];
+    UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[iconView, titleLabel, subtitleLabel]];
+    stack.axis = UILayoutConstraintAxisVertical;
+    stack.alignment = UIStackViewAlignmentCenter;
+    stack.spacing = 12.0f;
+    stack.translatesAutoresizingMaskIntoConstraints = NO;
 
+    [emptyView addSubview:stack];
     [NSLayoutConstraint activateConstraints:@[
-        [iconView.widthAnchor constraintEqualToConstant:80.0f],
-        [iconView.heightAnchor constraintEqualToConstant:80.0f],
-        [iconView.centerXAnchor constraintEqualToAnchor:emptyView.centerXAnchor],
-        [iconView.centerYAnchor constraintEqualToAnchor:emptyView.centerYAnchor constant:-50.0f],
-
-        [titleLabel.topAnchor constraintEqualToAnchor:iconView.bottomAnchor constant:16.0f],
-        [titleLabel.leadingAnchor constraintEqualToAnchor:emptyView.leadingAnchor constant:20.0f],
-        [titleLabel.trailingAnchor constraintEqualToAnchor:emptyView.trailingAnchor constant:-20.0f],
-
-        [subtitleLabel.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor constant:8.0f],
-        [subtitleLabel.leadingAnchor constraintEqualToAnchor:emptyView.leadingAnchor constant:20.0f],
-        [subtitleLabel.trailingAnchor constraintEqualToAnchor:emptyView.trailingAnchor constant:-20.0f],
+        [stack.centerXAnchor constraintEqualToAnchor:emptyView.centerXAnchor],
+        [stack.centerYAnchor constraintEqualToAnchor:emptyView.centerYAnchor],
+        [stack.widthAnchor constraintLessThanOrEqualToAnchor:emptyView.widthAnchor constant:-40.0f],
     ]];
 
     self.tableView.backgroundView = emptyView;
