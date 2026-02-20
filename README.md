@@ -1,14 +1,12 @@
 # iTransmission-iOS
 
-iTransmission for iOS 15+
+iTransmission for iOS 16+
 
 This port of iTransmission for iOS was initially created by [ccp0101](https://github.com/ccp0101) and hosted at <https://code.google.com/archive/p/itransmission/>
 
 I updated the project to the new recommended settings, fixed a few bugs & things that weren't working.
 
 Everything works, torrent files, magnet links and exporting files to other applications.
-
-The only bug I noticed is that sometimes when deleting a torrent the app crashes.
 
 ## Original about page
 
