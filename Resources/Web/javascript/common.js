@@ -42,18 +42,6 @@ $(document).ready(function() {
 		};
 	}
 
-	// IE specific fixes here
-	if ($.browser.msie) {
-		try {
-			document.execCommand("BackgroundImageCache", false, true);
-		} catch(err) {}
-		$('.dialog_container').css('height',$(window).height()+'px');
-	}
-
-	if ($.browser.safari) {
-		// Move search field's margin down for the styled input
-		$('#torrent_search').css('margin-top', 3);
-	}
 	if (isMobileDevice){
 		window.onload = function(){ setTimeout(function() { window.scrollTo(0,1); },500); };
 		window.onorientationchange = function(){ setTimeout(function() { window.scrollTo(0,1); },100); };

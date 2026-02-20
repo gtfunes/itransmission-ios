@@ -155,23 +155,6 @@ Transmission.prototype =
 		search_box.bind('keyup click', function() {
 			tr.setFilterText(this.value);
 		});
-		if (!$.browser.safari)
-		{
-			search_box.addClass('blur');
-			search_box[0].value = 'Filter';
-			search_box.bind('blur', function() {
-				if (this.value === '') {
-					$(this).addClass('blur');
-					this.value = 'Filter';
-					tr.setFilterText(null);
-				}
-			}).bind('focus', function() {
-				if ($(this).is('.blur')) {
-					this.value = '';
-					$(this).removeClass('blur');
-				}
-			});
-		}
 	},
 
 	/**

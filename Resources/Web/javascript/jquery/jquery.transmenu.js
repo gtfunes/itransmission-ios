@@ -309,10 +309,6 @@
 			//add the little arrow before each submenu
 			if ( transMenuSettings.arrow_char ) {
 				var arrow_markup = $("<span class='arrow'>" + transMenuSettings.arrow_char + '</span>');
-				// Mozilla float/position hack
-				if ($.browser.mozilla && +$.browser.version.replace(/\./g,'').slice(0,3) < 191) {
-					arrow_markup.css('margin-top', '-13px');
-				}
 				$('div.inner div.outerbox', this).before(arrow_markup);
 			}
 
