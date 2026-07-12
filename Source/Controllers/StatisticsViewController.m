@@ -3,7 +3,8 @@
 //  iTransmission
 //
 //  Created by Mike Chen on 5/29/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 iTransmission authors.
+//  SPDX-License-Identifier: GPL-3.0-or-later
 //
 
 #import "StatisticsViewController.h"
