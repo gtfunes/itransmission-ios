@@ -3,7 +3,8 @@
 //  iTransmission
 //
 //  Created by Mike Chen on 10/19/10.
-//  Copyright 2010 __MyCompanyName__. All rights reserved.
+//  Copyright 2010 iTransmission authors.
+//  SPDX-License-Identifier: GPL-3.0-or-later
 //
 
 #import "ClipboardLabel.h"

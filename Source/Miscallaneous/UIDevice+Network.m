@@ -3,7 +3,8 @@
 //  WebServer
 //
 //  Created by Gaston Funes on 11/28/12.
-//  Copyright (c) 2012 Gaston Funes. All rights reserved.
+//  Copyright (c) 2012 Gaston Funes.
+//  SPDX-License-Identifier: GPL-3.0-or-later
 //
 
 #import "UIDevice+Network.h"
